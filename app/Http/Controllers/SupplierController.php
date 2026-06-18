@@ -5,11 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSupplierRequest;
 use App\Http\Requests\UpdateSupplierRequest;
 use App\Models\Supplier;
+use App\Services\Catalog\SupplierService;
+use App\Services\Exceptions\DependencyException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class SupplierController extends Controller
 {
+    public function __construct(private SupplierService $supplierService) {}
+
     public function index(): View
     {
         $suppliers = Supplier::orderBy('name')
@@ -26,7 +30,7 @@ class SupplierController extends Controller
 
     public function store(StoreSupplierRequest $request): RedirectResponse
     {
-        Supplier::create($request->validated());
+        $this->supplierService->create($request->validated());
 
         return redirect()->route('suppliers.index')
             ->with('success', 'Proveedor creado correctamente.');
@@ -44,7 +48,7 @@ class SupplierController extends Controller
 
     public function update(UpdateSupplierRequest $request, Supplier $supplier): RedirectResponse
     {
-        $supplier->update($request->validated());
+        $this->supplierService->update($supplier, $request->validated());
 
         return redirect()->route('suppliers.index')
             ->with('success', 'Proveedor actualizado correctamente.');
@@ -52,12 +56,12 @@ class SupplierController extends Controller
 
     public function destroy(Supplier $supplier): RedirectResponse
     {
-        if ($supplier->products()->exists()) {
+        try {
+            $this->supplierService->delete($supplier);
+        } catch (DependencyException $e) {
             return redirect()->route('suppliers.index')
-                ->with('error', 'No se puede eliminar el proveedor porque tiene productos asociados.');
+                ->with('error', $e->getMessage());
         }
-
-        $supplier->delete();
 
         return redirect()->route('suppliers.index')
             ->with('success', 'Proveedor eliminado correctamente.');

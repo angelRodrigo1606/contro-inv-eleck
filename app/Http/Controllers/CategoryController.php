@@ -5,11 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
+use App\Services\Catalog\CategoryService;
+use App\Services\Exceptions\DependencyException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
+    public function __construct(private CategoryService $categoryService) {}
+
     public function index(): View
     {
         $categories = Category::orderBy('name')
@@ -26,7 +30,7 @@ class CategoryController extends Controller
 
     public function store(StoreCategoryRequest $request): RedirectResponse
     {
-        Category::create($request->validated());
+        $this->categoryService->create($request->validated());
 
         return redirect()->route('categories.index')
             ->with('success', 'Categoría creada correctamente.');
@@ -44,7 +48,7 @@ class CategoryController extends Controller
 
     public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
     {
-        $category->update($request->validated());
+        $this->categoryService->update($category, $request->validated());
 
         return redirect()->route('categories.index')
             ->with('success', 'Categoría actualizada correctamente.');
@@ -52,12 +56,12 @@ class CategoryController extends Controller
 
     public function destroy(Category $category): RedirectResponse
     {
-        if ($category->products()->exists()) {
+        try {
+            $this->categoryService->delete($category);
+        } catch (DependencyException $e) {
             return redirect()->route('categories.index')
-                ->with('error', 'No se puede eliminar la categoría porque tiene productos asociados.');
+                ->with('error', $e->getMessage());
         }
-
-        $category->delete();
 
         return redirect()->route('categories.index')
             ->with('success', 'Categoría eliminada correctamente.');

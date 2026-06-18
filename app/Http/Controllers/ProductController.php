@@ -7,30 +7,19 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\StockMovement;
 use App\Models\Supplier;
+use App\Services\Inventory\ProductService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class ProductController extends Controller
 {
+    public function __construct(private ProductService $productService) {}
+
     public function index(Request $request): View
     {
-        $query = Product::with(['category', 'supplier'])
-            ->when($request->search, function ($q, $search) {
-                $q->where(function ($sub) use ($search) {
-                    $sub->where('name', 'like', "%{$search}%")
-                        ->orWhere('sku', 'like', "%{$search}%");
-                });
-            })
-            ->when($request->category_id, function ($q, $categoryId) {
-                $q->where('category_id', $categoryId);
-            })
-            ->orderBy('name');
-
-        $products = $query->paginate(15)->withQueryString();
+        $products = $this->productService->search($request->only(['search', 'category_id']));
         $categories = Category::orderBy('name')->get();
 
         return view('products.index', compact('products', 'categories'));
@@ -46,24 +35,7 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
-
-        $product = DB::transaction(function () use ($validated, $request) {
-            $product = Product::create($validated);
-
-            if ($product->quantity > 0) {
-                StockMovement::create([
-                    'product_id' => $product->id,
-                    'user_id' => $request->user()->id,
-                    'type' => 'entry',
-                    'quantity' => $product->quantity,
-                    'reference' => 'Inventario inicial',
-                    'notes' => 'Stock inicial al crear el producto',
-                ]);
-            }
-
-            return $product;
-        });
+        $this->productService->create($request->validated(), $request->user());
 
         return redirect()->route('products.index')
             ->with('success', 'Producto creado correctamente.');
@@ -86,7 +58,7 @@ class ProductController extends Controller
 
     public function update(UpdateProductRequest $request, Product $product): RedirectResponse
     {
-        $product->update($request->validated());
+        $this->productService->update($product, $request->validated());
 
         return redirect()->route('products.index')
             ->with('success', 'Producto actualizado correctamente.');
@@ -94,7 +66,7 @@ class ProductController extends Controller
 
     public function destroy(Product $product): RedirectResponse
     {
-        $product->delete();
+        $this->productService->delete($product);
 
         return redirect()->route('products.index')
             ->with('success', 'Producto eliminado correctamente.');
@@ -102,26 +74,17 @@ class ProductController extends Controller
 
     public function adjust(AdjustStockRequest $request, Product $product): RedirectResponse
     {
-        $newQuantity = (int) $request->validated()['quantity'];
-        $difference = $newQuantity - $product->quantity;
+        $movement = $this->productService->adjustStock(
+            $product,
+            (int) $request->validated()['quantity'],
+            $request->validated()['reason'] ?? null,
+            $request->user()
+        );
 
-        if ($difference === 0) {
+        if ($movement === null) {
             return redirect()->route('products.show', $product)
                 ->with('info', 'La cantidad no cambió.');
         }
-
-        DB::transaction(function () use ($product, $newQuantity, $difference, $request) {
-            $product->update(['quantity' => $newQuantity]);
-
-            StockMovement::create([
-                'product_id' => $product->id,
-                'user_id' => $request->user()->id,
-                'type' => 'adjustment',
-                'quantity' => $difference,
-                'reference' => 'Ajuste manual',
-                'notes' => $request->validated()['reason'] ?? null,
-            ]);
-        });
 
         return redirect()->route('products.show', $product)
             ->with('success', 'Stock ajustado correctamente.');

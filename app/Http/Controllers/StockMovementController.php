@@ -4,32 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStockMovementRequest;
 use App\Models\Product;
-use App\Models\StockMovement;
+use App\Services\Exceptions\InsufficientStockException;
+use App\Services\Inventory\StockMovementService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class StockMovementController extends Controller
 {
+    public function __construct(private StockMovementService $movementService) {}
+
     public function index(Request $request): View
     {
-        $query = StockMovement::with(['product.category', 'user'])
-            ->when($request->type, function ($q, $type) {
-                $q->where('type', $type);
-            })
-            ->when($request->product_id, function ($q, $productId) {
-                $q->where('product_id', $productId);
-            })
-            ->when($request->from, function ($q, $from) {
-                $q->whereDate('created_at', '>=', $from);
-            })
-            ->when($request->to, function ($q, $to) {
-                $q->whereDate('created_at', '<=', $to);
-            })
-            ->orderByDesc('created_at');
-
-        $movements = $query->paginate(20)->withQueryString();
+        $movements = $this->movementService->search($request->only(['type', 'product_id', 'from', 'to']));
         $products = Product::orderBy('name')->get();
 
         return view('stock-movements.index', compact('movements', 'products'));
@@ -44,31 +31,13 @@ class StockMovementController extends Controller
 
     public function store(StoreStockMovementRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
-        $product = Product::findOrFail($validated['product_id']);
-
-        if ($validated['type'] === 'exit' && $product->quantity < $validated['quantity']) {
+        try {
+            $this->movementService->register($request->validated(), $request->user());
+        } catch (InsufficientStockException $e) {
             return redirect()->route('stock-movements.create')
-                ->with('error', 'Stock insuficiente para registrar la salida.')
+                ->with('error', $e->getMessage())
                 ->withInput();
         }
-
-        DB::transaction(function () use ($product, $validated, $request) {
-            if ($validated['type'] === 'entry') {
-                $product->increment('quantity', $validated['quantity']);
-            } else {
-                $product->decrement('quantity', $validated['quantity']);
-            }
-
-            StockMovement::create([
-                'product_id' => $product->id,
-                'user_id' => $request->user()->id,
-                'type' => $validated['type'],
-                'quantity' => $validated['quantity'],
-                'reference' => $validated['reference'] ?? null,
-                'notes' => $validated['notes'] ?? null,
-            ]);
-        });
 
         return redirect()->route('stock-movements.index')
             ->with('success', 'Movimiento registrado correctamente.');

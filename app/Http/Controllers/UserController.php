@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use App\Services\Exceptions\SelfDeletionException;
+use App\Services\Users\UserService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class UserController extends Controller
 {
+    public function __construct(private UserService $userService) {}
+
     public function index(): View
     {
         $users = User::orderBy('name')->paginate(15);
@@ -25,10 +28,7 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
-
-        User::create($data);
+        $this->userService->create($request->validated());
 
         return redirect()->route('users.index')
             ->with('success', 'Usuario creado correctamente.');
@@ -46,15 +46,7 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $data = $request->validated();
-
-        if (! empty($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        } else {
-            unset($data['password']);
-        }
-
-        $user->update($data);
+        $this->userService->update($user, $request->validated());
 
         return redirect()->route('users.index')
             ->with('success', 'Usuario actualizado correctamente.');
@@ -62,12 +54,12 @@ class UserController extends Controller
 
     public function destroy(User $user): RedirectResponse
     {
-        if ($user->id === auth()->id()) {
+        try {
+            $this->userService->delete($user, auth()->id());
+        } catch (SelfDeletionException $e) {
             return redirect()->route('users.index')
-                ->with('error', 'No puedes eliminar tu propio usuario.');
+                ->with('error', $e->getMessage());
         }
-
-        $user->delete();
 
         return redirect()->route('users.index')
             ->with('success', 'Usuario eliminado correctamente.');

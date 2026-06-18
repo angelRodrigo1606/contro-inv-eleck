@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\Reporting\DashboardService;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request)
+    public function __construct(private DashboardService $dashboardService) {}
+
+    public function index(Request $request): View
     {
-        return app(ReportController::class)->dashboard($request);
+        $data = $this->dashboardService->getData();
+
+        return view('dashboard', $data);
     }
 }
