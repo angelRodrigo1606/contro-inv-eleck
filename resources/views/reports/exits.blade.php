@@ -13,7 +13,7 @@
                         <h3 class="text-lg font-medium">Salidas de mercancía</h3>
                         <div class="space-x-2">
                             <a href="{{ route('reports.exits.export', ['format' => 'csv'] + request()->all()) }}" class="inline-flex items-center px-4 py-2 bg-brand-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-brand-primary/80 transition-colors">CSV</a>
-                            <a href="{{ route('reports.exits.export', ['format' => 'pdf'] + request()->all()) }}" class="inline-flex items-center px-4 py-2 bg-brand-secondary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-brand-secondary/80 transition-colors">PDF</a>
+                            <a href="{{ route('reports.exits.export', ['format' => 'pdf'] + request()->all()) }}" class="inline-flex items-center px-4 py-2 bg-brand-secondary border border-transparent rounded-md font-semibold text-xs text-brand-midnight uppercase tracking-widest hover:bg-brand-secondary/80 transition-colors">PDF</a>
                         </div>
                     </div>
 
