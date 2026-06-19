@@ -104,6 +104,6 @@ describe('products', function () {
 
         $response = $this->actingAs($this->employee)->get(route('products.index'));
 
-        $response->assertOk()->assertSee('bg-red-50');
+        $response->assertOk()->assertSee('bg-brand-secondary/20');
     });
 });

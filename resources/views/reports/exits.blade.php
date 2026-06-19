@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-brand-midnight leading-tight">
             {{ __('Reporte de salidas') }}
         </h2>
     </x-slot>
@@ -8,7 +8,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+                <div class="p-6 text-brand-midnight">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium">Salidas de mercancía</h3>
                         <div class="space-x-2">
@@ -19,18 +19,18 @@
 
                     @include('reports._filters')
 
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full divide-y divide-brand-midnight/20">
+                        <thead class="bg-brand-cream">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoría</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usuario</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Referencia</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase">Fecha</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase">Producto</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase">Categoría</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase">Cantidad</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase">Usuario</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase">Referencia</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-brand-midnight/20">
                             @foreach($movements as $movement)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $movement->created_at->format('d/m/Y H:i') }}</td>

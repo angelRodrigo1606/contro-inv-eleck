@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-brand-midnight leading-tight">
             {{ __('Producto') }}: {{ $product->name }}
         </h2>
     </x-slot>
@@ -8,7 +8,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+                <div class="p-6 text-brand-midnight">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <p><strong>SKU:</strong> {{ $product->sku }}</p>
                         <p><strong>Categoría:</strong> {{ $product->category->name }}</p>
@@ -22,7 +22,7 @@
                     <p class="mt-4"><strong>Descripción:</strong> {{ $product->description ?: 'Sin descripción' }}</p>
 
                     @if(auth()->user()->isAdmin())
-                        <div class="mt-6 p-4 bg-gray-50 rounded">
+                        <div class="mt-6 p-4 bg-white rounded">
                             <h4 class="font-medium mb-2">Ajustar stock</h4>
                             <form method="POST" action="{{ route('products.adjust', $product) }}" class="flex gap-2 items-end">
                                 @csrf
@@ -41,25 +41,25 @@
                     @endif
 
                     <div class="mt-6">
-                        <a href="{{ route('products.index') }}" class="text-indigo-600 hover:text-indigo-900">Volver al listado</a>
+                        <a href="{{ route('products.index') }}" class="text-brand-primary hover:text-brand-primary/80">Volver al listado</a>
                     </div>
                 </div>
             </div>
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+                <div class="p-6 text-brand-midnight">
                     <h3 class="text-lg font-medium mb-4">Historial de movimientos</h3>
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full divide-y divide-brand-midnight/20">
+                        <thead class="bg-brand-cream">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referencia</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Fecha</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Tipo</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Cantidad</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Referencia</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Usuario</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-brand-midnight/20">
                             @forelse($product->stockMovements as $movement)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $movement->created_at->format('d/m/Y H:i') }}</td>
@@ -70,7 +70,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">No hay movimientos registrados.</td>
+                                    <td colspan="5" class="px-6 py-4 text-center text-brand-midnight/60">No hay movimientos registrados.</td>
                                 </tr>
                             @endforelse
                         </tbody>

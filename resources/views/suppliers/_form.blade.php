@@ -19,7 +19,7 @@
 
     <div>
         <x-input-label for="address" :value="__('Dirección')" />
-        <textarea id="address" name="address" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('address', $supplier->address ?? '') }}</textarea>
+        <textarea id="address" name="address" rows="3" class="mt-1 block w-full border-brand-midnight/30 focus:border-brand-primary focus:ring-brand-primary rounded-md shadow-sm">{{ old('address', $supplier->address ?? '') }}</textarea>
         <x-input-error class="mt-2" :messages="$errors->get('address')" />
     </div>
 
@@ -31,13 +31,13 @@
 
     <div>
         <label for="is_active" class="inline-flex items-center">
-            <input id="is_active" type="checkbox" name="is_active" value="1" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" {{ old('is_active', $supplier->is_active ?? true) ? 'checked' : '' }}>
-            <span class="ms-2 text-sm text-gray-600">{{ __('Activo') }}</span>
+            <input id="is_active" type="checkbox" name="is_active" value="1" class="rounded border-brand-midnight/30 text-brand-primary shadow-sm focus:ring-brand-primary" {{ old('is_active', $supplier->is_active ?? true) ? 'checked' : '' }}>
+            <span class="ms-2 text-sm text-brand-midnight/80">{{ __('Activo') }}</span>
         </label>
     </div>
 </div>
 
 <div class="flex items-center gap-4 mt-6">
     <x-primary-button>{{ __('Guardar') }}</x-primary-button>
-    <a href="{{ route('suppliers.index') }}" class="text-sm text-gray-600 hover:text-gray-900">Cancelar</a>
+    <a href="{{ route('suppliers.index') }}" class="text-sm text-brand-midnight/80 hover:text-brand-midnight">Cancelar</a>
 </div>

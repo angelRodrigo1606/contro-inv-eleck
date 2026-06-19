@@ -10,20 +10,20 @@
         <x-text-input id="sku" name="sku" type="text" class="mt-1 block w-full" :value="old('sku', $product->sku ?? '')" required :disabled="isset($product)" />
         <x-input-error class="mt-2" :messages="$errors->get('sku')" />
         @if(isset($product))
-            <p class="text-sm text-gray-500 mt-1">El SKU no se puede modificar.</p>
+            <p class="text-sm text-brand-midnight/60 mt-1">El SKU no se puede modificar.</p>
         @endif
     </div>
 
     <div>
         <x-input-label for="description" :value="__('Descripción')" />
-        <textarea id="description" name="description" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('description', $product->description ?? '') }}</textarea>
+        <textarea id="description" name="description" rows="3" class="mt-1 block w-full border-brand-midnight/30 focus:border-brand-primary focus:ring-brand-primary rounded-md shadow-sm">{{ old('description', $product->description ?? '') }}</textarea>
         <x-input-error class="mt-2" :messages="$errors->get('description')" />
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
             <x-input-label for="category_id" :value="__('Categoría')" />
-            <select id="category_id" name="category_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+            <select id="category_id" name="category_id" class="mt-1 block w-full border-brand-midnight/30 focus:border-brand-primary focus:ring-brand-primary rounded-md shadow-sm" required>
                 <option value="">Selecciona una categoría</option>
                 @foreach($categories as $category)
                     <option value="{{ $category->id }}" {{ old('category_id', $product->category_id ?? '') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
@@ -34,7 +34,7 @@
 
         <div>
             <x-input-label for="supplier_id" :value="__('Proveedor')" />
-            <select id="supplier_id" name="supplier_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+            <select id="supplier_id" name="supplier_id" class="mt-1 block w-full border-brand-midnight/30 focus:border-brand-primary focus:ring-brand-primary rounded-md shadow-sm" required>
                 <option value="">Selecciona un proveedor</option>
                 @foreach($suppliers as $supplier)
                     <option value="{{ $supplier->id }}" {{ old('supplier_id', $product->supplier_id ?? '') == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
@@ -67,5 +67,5 @@
 
 <div class="flex items-center gap-4 mt-6">
     <x-primary-button>{{ __('Guardar') }}</x-primary-button>
-    <a href="{{ route('products.index') }}" class="text-sm text-gray-600 hover:text-gray-900">Cancelar</a>
+    <a href="{{ route('products.index') }}" class="text-sm text-brand-midnight/80 hover:text-brand-midnight">Cancelar</a>
 </div>

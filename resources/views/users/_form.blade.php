@@ -13,7 +13,7 @@
 
     <div>
         <x-input-label for="role" :value="__('Rol')" />
-        <select id="role" name="role" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+        <select id="role" name="role" class="mt-1 block w-full border-brand-midnight/30 focus:border-brand-primary focus:ring-brand-primary rounded-md shadow-sm" required>
             <option value="">Selecciona un rol</option>
             <option value="administrador" {{ old('role', $user->role ?? '') == 'administrador' ? 'selected' : '' }}>Administrador</option>
             <option value="empleado" {{ old('role', $user->role ?? '') == 'empleado' ? 'selected' : '' }}>Empleado</option>
@@ -26,12 +26,12 @@
         <x-text-input id="password" name="password" type="password" class="mt-1 block w-full" />
         <x-input-error class="mt-2" :messages="$errors->get('password')" />
         @if(isset($user))
-            <p class="text-sm text-gray-500 mt-1">Deja en blanco para mantener la contraseña actual.</p>
+            <p class="text-sm text-brand-midnight/60 mt-1">Deja en blanco para mantener la contraseña actual.</p>
         @endif
     </div>
 </div>
 
 <div class="flex items-center gap-4 mt-6">
     <x-primary-button>{{ __('Guardar') }}</x-primary-button>
-    <a href="{{ route('users.index') }}" class="text-sm text-gray-600 hover:text-gray-900">Cancelar</a>
+    <a href="{{ route('users.index') }}" class="text-sm text-brand-midnight/80 hover:text-brand-midnight">Cancelar</a>
 </div>
