@@ -33,31 +33,31 @@
                         <x-secondary-button type="submit">Buscar</x-secondary-button>
                     </form>
 
-                    <table class="min-w-full divide-y divide-brand-midnight/20">
-                        <thead class="bg-brand-cream">
+                    <table class="w-full border-separate border-spacing-0 border border-brand-midnight/10 rounded-xl overflow-hidden shadow-sm">
+                        <thead class="bg-brand-midnight">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Nombre</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">SKU</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Categoría</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Precio</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Stock</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Acciones</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Nombre</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">SKU</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Categoría</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Precio</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Stock</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-brand-midnight/20">
+                        <tbody class="bg-white divide-y divide-brand-midnight/10">
                             @foreach($products as $product)
-                                <tr class="{{ $product->isLowStock() ? 'bg-brand-secondary/20' : '' }}">
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $product->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $product->sku }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $product->category->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">${{ number_format($product->price, 2) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap {{ $product->isLowStock() ? 'text-red-600 font-bold' : '' }}">
+                                <tr class="{{ $product->isLowStock() ? 'bg-brand-secondary/20' : '' }} hover:bg-brand-soft transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $product->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $product->sku }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $product->category->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">${{ number_format($product->price, 2) }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90 {{ $product->isLowStock() ? 'text-brand-secondary font-bold' : '' }}">
                                         {{ $product->quantity }} / {{ $product->min_stock }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap flex space-x-2">
-                                        <a href="{{ route('products.show', $product) }}" class="text-brand-primary hover:text-brand-primary/80">Ver</a>
+                                        <a href="{{ route('products.show', $product) }}" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 transition-colors">Ver</a>
                                         @if(auth()->user()->isAdmin())
-                                            <a href="{{ route('products.edit', $product) }}" class="text-brand-primary hover:text-brand-primary/80">Editar</a>
+                                            <a href="{{ route('products.edit', $product) }}" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 transition-colors">Editar</a>
                                         @endif
                                     </td>
                                 </tr>

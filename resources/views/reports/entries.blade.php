@@ -12,35 +12,35 @@
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium">Entradas de mercancía</h3>
                         <div class="space-x-2">
-                            <a href="{{ route('reports.entries.export', ['format' => 'csv'] + request()->all()) }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700">CSV</a>
-                            <a href="{{ route('reports.entries.export', ['format' => 'pdf'] + request()->all()) }}" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700">PDF</a>
+                            <a href="{{ route('reports.entries.export', ['format' => 'csv'] + request()->all()) }}" class="inline-flex items-center px-4 py-2 bg-brand-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-brand-primary/80 transition-colors">CSV</a>
+                            <a href="{{ route('reports.entries.export', ['format' => 'pdf'] + request()->all()) }}" class="inline-flex items-center px-4 py-2 bg-brand-secondary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-brand-secondary/80 transition-colors">PDF</a>
                         </div>
                     </div>
 
                     @include('reports._filters')
 
-                    <table class="min-w-full divide-y divide-brand-midnight/20">
-                        <thead class="bg-brand-cream">
+                    <table class="w-full border-separate border-spacing-0 border border-brand-midnight/10 rounded-xl overflow-hidden shadow-sm">
+                        <thead class="bg-brand-midnight">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase">Fecha</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase">Producto</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase">Categoría</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase">Cantidad</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase">Proveedor</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase">Usuario</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase">Referencia</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase">Fecha</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase">Producto</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase">Categoría</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase">Cantidad</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase">Proveedor</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase">Usuario</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase">Referencia</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-brand-midnight/20">
+                        <tbody class="bg-white divide-y divide-brand-midnight/10">
                             @foreach($movements as $movement)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->created_at->format('d/m/Y H:i') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->product->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->product->category->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->quantity }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->product->supplier->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->user->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->reference }}</td>
+                                <tr class="hover:bg-brand-soft transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->created_at->format('d/m/Y H:i') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->product->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->product->category->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->quantity }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->product->supplier->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->user->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->reference }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

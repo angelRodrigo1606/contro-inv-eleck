@@ -14,7 +14,7 @@
                         <p><strong>Categoría:</strong> {{ $product->category->name }}</p>
                         <p><strong>Proveedor:</strong> {{ $product->supplier->name }}</p>
                         <p><strong>Precio:</strong> ${{ number_format($product->price, 2) }}</p>
-                        <p class="{{ $product->isLowStock() ? 'text-red-600 font-bold' : '' }}">
+                        <p class="{{ $product->isLowStock() ? 'text-brand-secondary font-bold' : '' }}">
                             <strong>Stock actual:</strong> {{ $product->quantity }}
                         </p>
                         <p><strong>Stock mínimo:</strong> {{ $product->min_stock }}</p>

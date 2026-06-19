@@ -20,7 +20,7 @@
                         <div class="mb-4 p-4 bg-brand-secondary/20 text-brand-midnight rounded">{{ session('success') }}</div>
                     @endif
                     @if(session('error'))
-                        <div class="mb-4 p-4 bg-red-100 text-red-800 rounded">{{ session('error') }}</div>
+                        <div class="mb-4 p-4 bg-brand-secondary/10 text-brand-secondary rounded">{{ session('error') }}</div>
                     @endif
 
                     <form method="GET" action="{{ route('stock-movements.index') }}" class="mb-4 flex flex-wrap gap-2">
@@ -40,32 +40,32 @@
                         <x-secondary-button type="submit">Filtrar</x-secondary-button>
                     </form>
 
-                    <table class="min-w-full divide-y divide-brand-midnight/20">
-                        <thead class="bg-brand-cream">
+                    <table class="w-full border-separate border-spacing-0 border border-brand-midnight/10 rounded-xl overflow-hidden shadow-sm">
+                        <thead class="bg-brand-midnight">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Fecha</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Producto</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Tipo</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Cantidad</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Referencia</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Usuario</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Fecha</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Producto</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Tipo</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Cantidad</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Referencia</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Usuario</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-brand-midnight/20">
+                        <tbody class="bg-white divide-y divide-brand-midnight/10">
                             @foreach($movements as $movement)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->created_at->format('d/m/Y H:i') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->product->name }}</td>
+                                <tr class="hover:bg-brand-soft transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->created_at->format('d/m/Y H:i') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->product->name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap capitalize">
                                         @if($movement->type === 'entry')
-                                            <span class="text-green-600 font-semibold">Entrada</span>
+                                            <span class="text-brand-primary font-semibold">Entrada</span>
                                         @else
-                                            <span class="text-red-600 font-semibold">Salida</span>
+                                            <span class="text-brand-secondary font-semibold">Salida</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->quantity }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->reference }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->user->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->quantity }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->reference }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->user->name }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

@@ -13,37 +13,37 @@
                         <div class="mb-4 p-4 bg-brand-secondary/20 text-brand-midnight rounded">{{ session('success') }}</div>
                     @endif
 
-                    <table class="min-w-full divide-y divide-brand-midnight/20">
-                        <thead class="bg-brand-cream">
+                    <table class="w-full border-separate border-spacing-0 border border-brand-midnight/10 rounded-xl overflow-hidden shadow-sm">
+                        <thead class="bg-brand-midnight">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Producto</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Stock actual</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Stock mínimo</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Fecha</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-brand-midnight uppercase tracking-wider">Acciones</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Producto</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Stock actual</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Stock mínimo</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Fecha</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-brand-midnight/20">
+                        <tbody class="bg-white divide-y divide-brand-midnight/10">
                             @forelse($alerts as $alert)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                <tr class="hover:bg-brand-soft transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">
                                         <a href="{{ route('products.show', $alert->product) }}" class="text-brand-primary hover:text-brand-primary/80">
                                             {{ $alert->product->name }}
                                         </a>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $alert->product->quantity }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $alert->product->min_stock }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $alert->created_at->format('d/m/Y H:i') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $alert->product->quantity }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $alert->product->min_stock }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $alert->created_at->format('d/m/Y H:i') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">
                                         <form action="{{ route('low-stock-alerts.resolve', $alert) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="text-green-600 hover:text-green-900">Marcar resuelta</button>
+                                            <button type="submit" class="text-brand-primary hover:text-brand-primary/80">Marcar resuelta</button>
                                         </form>
                                     </td>
                                 </tr>
                             @empty
-                                <tr>
+                                <tr class="hover:bg-brand-soft transition-colors duration-150">
                                     <td colspan="5" class="px-6 py-4 text-center text-brand-midnight/60">No hay alertas pendientes.</td>
                                 </tr>
                             @endforelse

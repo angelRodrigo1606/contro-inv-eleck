@@ -14,7 +14,7 @@
                 </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-brand-midnight/10">
                     <h3 class="text-sm font-medium text-brand-midnight/70">Productos con stock bajo</h3>
-                    <p class="mt-2 text-3xl font-bold {{ $lowStockCount > 0 ? 'text-red-600' : 'text-green-600' }}">{{ $lowStockCount }}</p>
+                    <p class="mt-2 text-3xl font-bold {{ $lowStockCount > 0 ? 'text-brand-secondary' : 'text-brand-primary' }}">{{ $lowStockCount }}</p>
                 </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-brand-midnight/10">
                     <h3 class="text-sm font-medium text-brand-midnight/70">Movimientos recientes</h3>
@@ -26,22 +26,22 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-brand-midnight/10">
                     <div class="p-6">
                         <h3 class="text-lg font-medium mb-4 text-brand-midnight">Movimientos recientes</h3>
-                        <table class="min-w-full divide-y divide-brand-midnight/20">
-                            <thead class="bg-white">
+                        <table class="w-full border-separate border-spacing-0 border border-brand-midnight/10 rounded-xl overflow-hidden shadow-sm">
+                            <thead class="bg-brand-midnight">
                                 <tr>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-brand-midnight uppercase">Fecha</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-brand-midnight uppercase">Producto</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-brand-midnight uppercase">Tipo</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-brand-midnight uppercase">Cantidad</th>
+                                    <th class="px-4 py-2 text-left text-xs font-semibold text-white uppercase">Fecha</th>
+                                    <th class="px-4 py-2 text-left text-xs font-semibold text-white uppercase">Producto</th>
+                                    <th class="px-4 py-2 text-left text-xs font-semibold text-white uppercase">Tipo</th>
+                                    <th class="px-4 py-2 text-left text-xs font-semibold text-white uppercase">Cantidad</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-brand-midnight/20">
+                            <tbody class="bg-white divide-y divide-brand-midnight/10">
                                 @foreach($recentMovements as $movement)
-                                    <tr>
-                                        <td class="px-4 py-2 whitespace-nowrap text-sm text-brand-midnight/80">{{ $movement->created_at->format('d/m/Y') }}</td>
-                                        <td class="px-4 py-2 text-sm text-brand-midnight/80">{{ $movement->product->name }}</td>
-                                        <td class="px-4 py-2 text-sm text-brand-midnight/80 capitalize">{{ $movement->type }}</td>
-                                        <td class="px-4 py-2 text-sm text-brand-midnight/80">{{ $movement->quantity }}</td>
+                                    <tr class="hover:bg-brand-soft transition-colors duration-150">
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->created_at->format('d/m/Y') }}</td>
+                                        <td class="px-4 py-2 text-sm text-brand-midnight/90">{{ $movement->product->name }}</td>
+                                        <td class="px-4 py-2 text-sm text-brand-midnight/90 capitalize">{{ $movement->type }}</td>
+                                        <td class="px-4 py-2 text-sm text-brand-midnight/90">{{ $movement->quantity }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
