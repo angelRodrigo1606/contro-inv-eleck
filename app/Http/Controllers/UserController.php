@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Services\Exceptions\SelfDeletionException;
 use App\Services\Users\UserService;
 use Illuminate\Http\RedirectResponse;
@@ -12,11 +13,14 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    public function __construct(private UserService $userService) {}
+    public function __construct(
+        private UserService $userService,
+        private UserRepositoryInterface $userRepository
+    ) {}
 
     public function index(): View
     {
-        $users = User::orderBy('name')->paginate(15);
+        $users = $this->userRepository->paginateOrdered();
 
         return view('users.index', compact('users'));
     }

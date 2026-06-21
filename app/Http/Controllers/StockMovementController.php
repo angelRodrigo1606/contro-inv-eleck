@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStockMovementRequest;
-use App\Models\Product;
+use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Services\Exceptions\InsufficientStockException;
 use App\Services\Inventory\StockMovementService;
 use Illuminate\Http\RedirectResponse;
@@ -12,19 +12,22 @@ use Illuminate\View\View;
 
 class StockMovementController extends Controller
 {
-    public function __construct(private StockMovementService $movementService) {}
+    public function __construct(
+        private StockMovementService $movementService,
+        private ProductRepositoryInterface $productRepository
+    ) {}
 
     public function index(Request $request): View
     {
         $movements = $this->movementService->search($request->only(['type', 'product_id', 'from', 'to']));
-        $products = Product::orderBy('name')->get();
+        $products = $this->productRepository->allOrdered();
 
         return view('stock-movements.index', compact('movements', 'products'));
     }
 
     public function create(): View
     {
-        $products = Product::orderBy('name')->get();
+        $products = $this->productRepository->allOrdered();
 
         return view('stock-movements.create', compact('products'));
     }

@@ -4,22 +4,28 @@ namespace App\Services\Inventory;
 
 use App\Models\LowStockAlert;
 use App\Models\Product;
-use App\Models\User;
 use App\Notifications\LowStockNotification;
-use Illuminate\Database\Eloquent\Builder;
+use App\Repositories\Contracts\LowStockAlertRepositoryInterface;
+use App\Repositories\Contracts\ProductRepositoryInterface;
+use App\Repositories\Contracts\UserRepositoryInterface;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class StockAlertService
 {
-    public function unresolved(): Builder
+    public function __construct(
+        private ProductRepositoryInterface $productRepository,
+        private LowStockAlertRepositoryInterface $lowStockAlertRepository,
+        private UserRepositoryInterface $userRepository
+    ) {}
+
+    public function unresolved(): LengthAwarePaginator
     {
-        return LowStockAlert::with('product')
-            ->unresolved()
-            ->orderByDesc('created_at');
+        return $this->lowStockAlertRepository->paginateUnresolved();
     }
 
     public function resolve(LowStockAlert $alert): void
     {
-        $alert->resolve();
+        $this->lowStockAlertRepository->resolve($alert);
     }
 
     public function syncForProduct(Product $product): void
@@ -32,34 +38,23 @@ class StockAlertService
             return;
         }
 
-        $this->resolveAlertsForProduct($product);
+        $this->lowStockAlertRepository->resolveForProduct($product);
     }
 
     private function createAlert(Product $product): void
     {
-        $exists = LowStockAlert::where('product_id', $product->id)
-            ->unresolved()
-            ->exists();
-
-        if ($exists) {
+        if ($this->lowStockAlertRepository->existsUnresolvedForProduct($product)) {
             return;
         }
 
-        LowStockAlert::create(['product_id' => $product->id]);
+        $this->lowStockAlertRepository->createForProduct($product);
 
         $this->notifyAdmins($product);
     }
 
-    private function resolveAlertsForProduct(Product $product): void
-    {
-        LowStockAlert::where('product_id', $product->id)
-            ->unresolved()
-            ->update(['resolved_at' => now()]);
-    }
-
     private function notifyAdmins(Product $product): void
     {
-        User::where('role', 'administrador')->get()
-            ->each(fn (User $admin) => $admin->notify(new LowStockNotification($product)));
+        $this->userRepository->getAdmins()
+            ->each(fn ($admin) => $admin->notify(new LowStockNotification($product)));
     }
 }

@@ -7,7 +7,7 @@ This file is a quick reference for AI coding agents working on this project. It 
 - **Project name:** `contro-inv-eleck` (Composer package name is still `laravel/laravel`).
 - **Purpose:** Web application for controlling the inventory of an electronic-products warehouse.
 - **Domain requirements:** The intended functionality is documented in `Ficha-Tecnica-Requerimientos-Funcionales.md` (Spanish). It covers product/catalog management, categories, suppliers, stock movements (entries/exits), low-stock alerts, reports, and role-based users (`Administrador` / `Empleado`).
-- **Current state:** The project is a fresh Laravel 13.x installation. Only the default `User` model, the default migrations, a single `welcome` route, and example Pest tests exist. The inventory domain modules described in the requirements document are **not yet implemented**.
+- **Current state:** The inventory domain modules are implemented. The application uses a **Repository pattern** on top of Eloquent: controllers depend on services, services depend on repository interfaces, and Eloquent implementations are bound in `AppServiceProvider`.
 - **Default locale:** `es` (`APP_LOCALE=es`). Spanish translation files live in `lang/es/` and `lang/es.json`.
 
 ## Technology stack
@@ -26,30 +26,45 @@ This file is a quick reference for AI coding agents working on this project. It 
 
 ```text
 app/
-  Http/Controllers/Controller.php   # Base controller
-  Models/User.php                   # Default User authenticatable
+  Http/Controllers/              # Web controllers (domain + auth)
+  Http/Middleware/RoleMiddleware.php
+  Http/Requests/                 # Form requests
+  Models/                        # User, Category, Supplier, Product, StockMovement, LowStockAlert
+  Notifications/LowStockNotification.php
+  Observers/StockMovementObserver.php
   Providers/AppServiceProvider.php
+  Repositories/                  # Repository pattern layer
+    Contracts/                   # Repository interfaces
+    Eloquent/                    # Eloquent implementations
+  Services/                      # Business logic layer
+    Catalog/                     # CategoryService, SupplierService
+    Exceptions/                  # Domain exceptions
+    Inventory/                   # ProductService, StockMovementService, StockAlertService
+    Reporting/                   # ReportService, ReportExporter, DashboardService
+    Users/                       # UserService, ProfileService
+  View/Components/
 bootstrap/
-  app.php                           # Application bootstrap, registers web/console routes and /up health route
-  providers.php                     # Only AppServiceProvider currently
-config/                             # Standard Laravel configuration
+  app.php                        # Application bootstrap, registers routes and middleware
+  providers.php                  # Registers AppServiceProvider
+config/                          # Standard Laravel configuration
 database/
-  factories/UserFactory.php
-  migrations/0001_01_01_000000_*   # Default users/password_reset_tokens/sessions, cache, jobs
+  factories/                     # Model factories
+  migrations/                    # Default + inventory domain migrations
   seeders/DatabaseSeeder.php
 public/
-  index.php                         # Web entry point
+  index.php                      # Web entry point
 resources/
-  css/app.css                       # Tailwind v4 entry
-  js/app.js                         # Empty JS entry
-  views/welcome.blade.php           # Default welcome view
+  css/app.css                    # Tailwind v4 entry
+  js/app.js                      # Empty JS entry
+  views/                         # Blade views
 routes/
-  web.php                           # Currently only `/` -> welcome
-  console.php                       # Artisan command definitions
+  web.php                        # Application routes
+  auth.php                       # Laravel Breeze auth routes
+  console.php                    # Artisan command definitions
 tests/
-  Feature/ExampleTest.php
+  Feature/                       # Pest feature tests
   Unit/ExampleTest.php
-  Pest.php                          # Pest configuration, extends Tests\TestCase for Feature
+  Pest.php                       # Pest configuration with RefreshDatabase for Feature
   TestCase.php
 ```
 
@@ -59,6 +74,20 @@ Autoloading follows PSR-4:
 - `Database\Factories\` → `database/factories/`
 - `Database\Seeders\` → `database/seeders/`
 - `Tests\` → `tests/`
+
+## Architecture
+
+The application follows a layered architecture:
+
+```text
+Routes → Controller → Service → Repository Interface → Eloquent Repository → Model
+```
+
+- **Controllers** handle HTTP concerns and delegate to services.
+- **Services** contain business rules, exceptions, and orchestration.
+- **Repositories** abstract all data access behind interfaces. Eloquent implementations live in `App\Repositories\Eloquent` and are bound to their interfaces in `AppServiceProvider::register()`.
+
+Do not access Eloquent models directly from controllers or services; use the injected repository interfaces.
 
 ## Build, development, and run commands
 
@@ -84,8 +113,8 @@ Autoloading follows PSR-4:
 - Test suites: `Unit` (`tests/Unit`) and `Feature` (`tests/Feature`).
 - The testing environment forces `APP_ENV=testing`, `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`, `QUEUE_CONNECTION=sync`, array cache/session, etc.
 - Base test class: `Tests\TestCase`.
-- `tests/Pest.php` extends `Tests\TestCase` for the `Feature` suite. `RefreshDatabase` is commented out by default; enable it when tests need a clean database.
-- Two example tests exist and pass out of the box.
+- `tests/Pest.php` extends `Tests\TestCase` for the `Feature` suite and applies `RefreshDatabase`.
+- Feature tests cover auth, categories, suppliers, products, stock movements, low-stock alerts, reports, users, and profile.
 
 ## Code style guidelines
 
@@ -96,6 +125,7 @@ Autoloading follows PSR-4:
 - Blade views use the `@vite` directive and `@fonts` directive.
 - Tailwind CSS v4 is imported with `@import 'tailwindcss';` in `resources/css/app.css`.
 - Keep code in English (class names, variables, comments) unless the domain concept itself is Spanish-only and already reflected in the requirements document.
+- Type-hint repository interfaces in service and controller constructors.
 
 ## Security considerations
 
@@ -103,7 +133,7 @@ Autoloading follows PSR-4:
 - Generate a fresh `APP_KEY` for each environment (`php artisan key:generate`).
 - Passwords are hashed via bcrypt (see the `hashed` cast in `User.php`).
 - CSRF protection is enabled on web routes by default.
-- No authentication starter kit (Breeze/Jetstream) is installed yet. The requirements document mentions it, but it will need to be added if required.
+- Laravel Breeze is installed for authentication scaffolding.
 - For production: set `APP_ENV=production`, `APP_DEBUG=false`, serve only over HTTPS, and keep dependencies updated.
 
 ## Deployment notes
@@ -115,19 +145,6 @@ Autoloading follows PSR-4:
 - If using queues, run a queue worker and configure the scheduler (`php artisan schedule:run` via cron).
 - There is no Docker or CI configuration in the repository yet.
 
-## Planned domain modules (from requirements)
-
-The requirements document describes the following modules to be built:
-
-- **Product CRUD** with SKU (immutable), category, supplier, price, initial quantity, minimum stock, and soft deletes.
-- **Category and supplier CRUD**, with restrictions on deletion when products are linked.
-- **Stock movements** (entries/exits) that automatically update product stock and record date, type, quantity, responsible user, and optional reference.
-- **Low-stock alerts** when a product reaches its configured minimum stock.
-- **Reports** (filterable by date range, product, category, supplier) with PDF/Excel export and a consolidated dashboard.
-- **Role-based users**: `Administrador` (full access) and `Empleado` (limited access to products, movements, and reports).
-
-These modules are not implemented. Build them following the existing Laravel conventions, PSR-4 namespaces, Pest tests, and Tailwind-based Blade views.
-
 ## Key files to consult
 
 - `composer.json` — PHP dependencies and Composer scripts.
@@ -136,3 +153,6 @@ These modules are not implemented. Build them following the existing Laravel con
 - `phpunit.xml` — Test environment and suites.
 - `.env.example` — Environment variable template.
 - `Ficha-Tecnica-Requerimientos-Funcionales.md` — Domain requirements (Spanish).
+- `app/Repositories/Contracts/` — Repository contracts.
+- `app/Repositories/Eloquent/` — Eloquent repository implementations.
+- `app/Providers/AppServiceProvider.php` — Repository interface bindings and observer registration.

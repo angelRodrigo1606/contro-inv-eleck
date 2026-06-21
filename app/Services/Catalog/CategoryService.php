@@ -3,20 +3,21 @@
 namespace App\Services\Catalog;
 
 use App\Models\Category;
+use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Services\Exceptions\DependencyException;
 
 class CategoryService
 {
+    public function __construct(private CategoryRepositoryInterface $categoryRepository) {}
+
     public function create(array $data): Category
     {
-        return Category::create($data);
+        return $this->categoryRepository->create($data);
     }
 
     public function update(Category $category, array $data): Category
     {
-        $category->update($data);
-
-        return $category;
+        return $this->categoryRepository->update($category, $data);
     }
 
     /**
@@ -24,10 +25,10 @@ class CategoryService
      */
     public function delete(Category $category): void
     {
-        if ($category->products()->exists()) {
+        if ($this->categoryRepository->hasProducts($category)) {
             throw new DependencyException('la categoría');
         }
 
-        $category->delete();
+        $this->categoryRepository->delete($category);
     }
 }

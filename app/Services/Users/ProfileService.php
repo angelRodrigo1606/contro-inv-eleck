@@ -3,10 +3,13 @@
 namespace App\Services\Users;
 
 use App\Models\User;
+use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Support\Facades\Hash;
 
 class ProfileService
 {
+    public function __construct(private UserRepositoryInterface $userRepository) {}
+
     public function update(User $user, array $data): User
     {
         $user->fill($data);
@@ -15,9 +18,7 @@ class ProfileService
             $user->email_verified_at = null;
         }
 
-        $user->save();
-
-        return $user;
+        return $this->userRepository->save($user);
     }
 
     /**
@@ -29,6 +30,6 @@ class ProfileService
             throw new \InvalidArgumentException('La contraseña proporcionada no es correcta.');
         }
 
-        $user->delete();
+        $this->userRepository->delete($user);
     }
 }

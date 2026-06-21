@@ -13,7 +13,7 @@ class LowStockAlertController extends Controller
 
     public function index(): View
     {
-        $alerts = $this->alertService->unresolved()->paginate(15);
+        $alerts = $this->alertService->unresolved();
 
         return view('low-stock-alerts.index', compact('alerts'));
     }

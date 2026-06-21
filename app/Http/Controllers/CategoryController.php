@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
+use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Services\Catalog\CategoryService;
 use App\Services\Exceptions\DependencyException;
 use Illuminate\Http\RedirectResponse;
@@ -12,13 +13,14 @@ use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
-    public function __construct(private CategoryService $categoryService) {}
+    public function __construct(
+        private CategoryService $categoryService,
+        private CategoryRepositoryInterface $categoryRepository
+    ) {}
 
     public function index(): View
     {
-        $categories = Category::orderBy('name')
-            ->withCount('products')
-            ->paginate(15);
+        $categories = $this->categoryRepository->paginateWithProductCount();
 
         return view('categories.index', compact('categories'));
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSupplierRequest;
 use App\Http\Requests\UpdateSupplierRequest;
 use App\Models\Supplier;
+use App\Repositories\Contracts\SupplierRepositoryInterface;
 use App\Services\Catalog\SupplierService;
 use App\Services\Exceptions\DependencyException;
 use Illuminate\Http\RedirectResponse;
@@ -12,13 +13,14 @@ use Illuminate\View\View;
 
 class SupplierController extends Controller
 {
-    public function __construct(private SupplierService $supplierService) {}
+    public function __construct(
+        private SupplierService $supplierService,
+        private SupplierRepositoryInterface $supplierRepository
+    ) {}
 
     public function index(): View
     {
-        $suppliers = Supplier::orderBy('name')
-            ->withCount('products')
-            ->paginate(15);
+        $suppliers = $this->supplierRepository->paginateWithProductCount();
 
         return view('suppliers.index', compact('suppliers'));
     }

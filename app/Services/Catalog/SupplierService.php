@@ -3,20 +3,21 @@
 namespace App\Services\Catalog;
 
 use App\Models\Supplier;
+use App\Repositories\Contracts\SupplierRepositoryInterface;
 use App\Services\Exceptions\DependencyException;
 
 class SupplierService
 {
+    public function __construct(private SupplierRepositoryInterface $supplierRepository) {}
+
     public function create(array $data): Supplier
     {
-        return Supplier::create($data);
+        return $this->supplierRepository->create($data);
     }
 
     public function update(Supplier $supplier, array $data): Supplier
     {
-        $supplier->update($data);
-
-        return $supplier;
+        return $this->supplierRepository->update($supplier, $data);
     }
 
     /**
@@ -24,10 +25,10 @@ class SupplierService
      */
     public function delete(Supplier $supplier): void
     {
-        if ($supplier->products()->exists()) {
+        if ($this->supplierRepository->hasProducts($supplier)) {
             throw new DependencyException('el proveedor');
         }
 
-        $supplier->delete();
+        $this->supplierRepository->delete($supplier);
     }
 }

@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AdjustStockRequest;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
-use App\Models\Category;
 use App\Models\Product;
-use App\Models\Supplier;
+use App\Repositories\Contracts\CategoryRepositoryInterface;
+use App\Repositories\Contracts\SupplierRepositoryInterface;
 use App\Services\Inventory\ProductService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,20 +15,24 @@ use Illuminate\View\View;
 
 class ProductController extends Controller
 {
-    public function __construct(private ProductService $productService) {}
+    public function __construct(
+        private ProductService $productService,
+        private CategoryRepositoryInterface $categoryRepository,
+        private SupplierRepositoryInterface $supplierRepository
+    ) {}
 
     public function index(Request $request): View
     {
         $products = $this->productService->search($request->only(['search', 'category_id']));
-        $categories = Category::orderBy('name')->get();
+        $categories = $this->categoryRepository->allOrdered();
 
         return view('products.index', compact('products', 'categories'));
     }
 
     public function create(): View
     {
-        $categories = Category::orderBy('name')->get();
-        $suppliers = Supplier::orderBy('name')->get();
+        $categories = $this->categoryRepository->allOrdered();
+        $suppliers = $this->supplierRepository->allOrdered();
 
         return view('products.create', compact('categories', 'suppliers'));
     }
@@ -43,15 +47,15 @@ class ProductController extends Controller
 
     public function show(Product $product): View
     {
-        $product->load(['category', 'supplier', 'stockMovements.user']);
+        $product = $this->productService->findWithRelations($product->id);
 
         return view('products.show', compact('product'));
     }
 
     public function edit(Product $product): View
     {
-        $categories = Category::orderBy('name')->get();
-        $suppliers = Supplier::orderBy('name')->get();
+        $categories = $this->categoryRepository->allOrdered();
+        $suppliers = $this->supplierRepository->allOrdered();
 
         return view('products.edit', compact('product', 'categories', 'suppliers'));
     }

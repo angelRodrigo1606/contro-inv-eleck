@@ -2,33 +2,24 @@
 
 namespace App\Services\Inventory;
 
-use App\Models\Product;
 use App\Models\StockMovement;
 use App\Models\User;
+use App\Repositories\Contracts\ProductRepositoryInterface;
+use App\Repositories\Contracts\StockMovementRepositoryInterface;
 use App\Services\Exceptions\InsufficientStockException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class StockMovementService
 {
+    public function __construct(
+        private ProductRepositoryInterface $productRepository,
+        private StockMovementRepositoryInterface $stockMovementRepository
+    ) {}
+
     public function search(array $filters): LengthAwarePaginator
     {
-        $query = StockMovement::with(['product.category', 'user'])
-            ->when($filters['type'] ?? null, function ($q, $type) {
-                $q->where('type', $type);
-            })
-            ->when($filters['product_id'] ?? null, function ($q, $productId) {
-                $q->where('product_id', $productId);
-            })
-            ->when($filters['from'] ?? null, function ($q, $from) {
-                $q->whereDate('created_at', '>=', $from);
-            })
-            ->when($filters['to'] ?? null, function ($q, $to) {
-                $q->whereDate('created_at', '<=', $to);
-            })
-            ->orderByDesc('created_at');
-
-        return $query->paginate(20)->withQueryString();
+        return $this->stockMovementRepository->search($filters);
     }
 
     /**
@@ -36,7 +27,7 @@ class StockMovementService
      */
     public function register(array $data, User $user): StockMovement
     {
-        $product = Product::findOrFail($data['product_id']);
+        $product = $this->productRepository->findOrFail($data['product_id']);
 
         if ($data['type'] === 'exit' && $product->quantity < $data['quantity']) {
             throw new InsufficientStockException;
@@ -44,12 +35,12 @@ class StockMovementService
 
         return DB::transaction(function () use ($product, $data, $user) {
             if ($data['type'] === 'entry') {
-                $product->increment('quantity', $data['quantity']);
+                $this->productRepository->incrementQuantity($product, $data['quantity']);
             } else {
-                $product->decrement('quantity', $data['quantity']);
+                $this->productRepository->decrementQuantity($product, $data['quantity']);
             }
 
-            return $product->stockMovements()->create([
+            return $this->stockMovementRepository->createForProduct($product, [
                 'user_id' => $user->id,
                 'type' => $data['type'],
                 'quantity' => $data['quantity'],

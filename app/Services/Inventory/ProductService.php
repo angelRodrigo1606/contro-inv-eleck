@@ -5,35 +5,35 @@ namespace App\Services\Inventory;
 use App\Models\Product;
 use App\Models\StockMovement;
 use App\Models\User;
+use App\Repositories\Contracts\ProductRepositoryInterface;
+use App\Repositories\Contracts\StockMovementRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class ProductService
 {
+    public function __construct(
+        private ProductRepositoryInterface $productRepository,
+        private StockMovementRepositoryInterface $stockMovementRepository
+    ) {}
+
     public function search(array $filters): LengthAwarePaginator
     {
-        $query = Product::with(['category', 'supplier'])
-            ->when($filters['search'] ?? null, function ($q, $search) {
-                $q->where(function ($sub) use ($search) {
-                    $sub->where('name', 'like', "%{$search}%")
-                        ->orWhere('sku', 'like', "%{$search}%");
-                });
-            })
-            ->when($filters['category_id'] ?? null, function ($q, $categoryId) {
-                $q->where('category_id', $categoryId);
-            })
-            ->orderBy('name');
+        return $this->productRepository->search($filters);
+    }
 
-        return $query->paginate(15)->withQueryString();
+    public function findWithRelations(int|string $id): Product
+    {
+        return $this->productRepository->findWithRelations($id);
     }
 
     public function create(array $data, User $creator): Product
     {
         return DB::transaction(function () use ($data, $creator) {
-            $product = Product::create($data);
+            $product = $this->productRepository->create($data);
 
             if ($product->quantity > 0) {
-                $product->stockMovements()->create([
+                $this->stockMovementRepository->createForProduct($product, [
                     'user_id' => $creator->id,
                     'type' => 'entry',
                     'quantity' => $product->quantity,
@@ -48,14 +48,12 @@ class ProductService
 
     public function update(Product $product, array $data): Product
     {
-        $product->update($data);
-
-        return $product;
+        return $this->productRepository->update($product, $data);
     }
 
     public function delete(Product $product): void
     {
-        $product->delete();
+        $this->productRepository->delete($product);
     }
 
     public function adjustStock(Product $product, int $newQuantity, ?string $reason, User $user): ?StockMovement
@@ -67,9 +65,9 @@ class ProductService
         }
 
         return DB::transaction(function () use ($product, $newQuantity, $difference, $reason, $user) {
-            $product->update(['quantity' => $newQuantity]);
+            $this->productRepository->updateQuantity($product, $newQuantity);
 
-            return $product->stockMovements()->create([
+            return $this->stockMovementRepository->createForProduct($product, [
                 'user_id' => $user->id,
                 'type' => 'adjustment',
                 'quantity' => $difference,

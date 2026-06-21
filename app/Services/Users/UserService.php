@@ -3,16 +3,19 @@
 namespace App\Services\Users;
 
 use App\Models\User;
+use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Services\Exceptions\SelfDeletionException;
 use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
+    public function __construct(private UserRepositoryInterface $userRepository) {}
+
     public function create(array $data): User
     {
         $data['password'] = Hash::make($data['password']);
 
-        return User::create($data);
+        return $this->userRepository->create($data);
     }
 
     public function update(User $user, array $data): User
@@ -23,9 +26,7 @@ class UserService
             unset($data['password']);
         }
 
-        $user->update($data);
-
-        return $user;
+        return $this->userRepository->update($user, $data);
     }
 
     /**
@@ -37,6 +38,6 @@ class UserService
             throw new SelfDeletionException;
         }
 
-        $user->delete();
+        $this->userRepository->delete($user);
     }
 }
