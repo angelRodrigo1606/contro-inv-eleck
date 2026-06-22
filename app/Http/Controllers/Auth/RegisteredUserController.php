@@ -38,11 +38,13 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = $this->userService->create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password,
-        ]);
+        $userData = $this->userService->createRegisteredUser(
+            name: $request->name,
+            email: $request->email,
+            password: $request->password,
+        );
+
+        $user = User::findOrFail($userData->id);
 
         event(new Registered($user));
 

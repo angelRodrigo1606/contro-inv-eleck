@@ -10,7 +10,7 @@ use App\Dtos\PaginatedData;
 use App\Mappers\UserMapper;
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Hash;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
@@ -86,9 +86,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function getAdmins(): Collection
     {
-        return UserMapper::toDataCollection(
-            User::where('role', 'administrador')->get()
-        );
+        return User::where('role', 'administrador')->get();
     }
 
     public function verifyPassword(int|string $id, string $password): bool

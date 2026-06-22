@@ -7,7 +7,8 @@ use App\Dtos\Input\StoreUserData;
 use App\Dtos\Input\UpdateProfileData;
 use App\Dtos\Input\UpdateUserData;
 use App\Dtos\PaginatedData;
-use Illuminate\Support\Collection;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 
 interface UserRepositoryInterface
 {
@@ -24,7 +25,7 @@ interface UserRepositoryInterface
     public function delete(int|string $id): void;
 
     /**
-     * @return Collection<int, UserData>
+     * @return Collection<int, User>
      */
     public function getAdmins(): Collection;
 
