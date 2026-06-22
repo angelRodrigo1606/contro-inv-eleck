@@ -14,6 +14,7 @@ readonly class SupplierData
         public ?string $address,
         public ?string $email,
         public bool $isActive,
+        public int $productsCount,
         public ?DateTimeImmutable $createdAt,
         public ?DateTimeImmutable $updatedAt,
         public ?DateTimeImmutable $deletedAt,

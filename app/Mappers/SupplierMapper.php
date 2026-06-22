@@ -18,6 +18,7 @@ class SupplierMapper
             address: $supplier->address,
             email: $supplier->email,
             isActive: (bool) $supplier->is_active,
+            productsCount: $supplier->products_count !== null ? (int) $supplier->products_count : 0,
             createdAt: $supplier->created_at?->toDateTimeImmutable(),
             updatedAt: $supplier->updated_at?->toDateTimeImmutable(),
             deletedAt: $supplier->deleted_at?->toDateTimeImmutable(),

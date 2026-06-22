@@ -38,13 +38,13 @@
                             @foreach($suppliers as $supplier)
                                 <tr class="hover:bg-brand-soft transition-colors duration-150">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $supplier->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $supplier->contact_name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $supplier->contactName }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $supplier->phone }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $supplier->email }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $supplier->products_count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $supplier->productsCount }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap flex space-x-2">
-                                        <a href="{{ route('suppliers.edit', $supplier) }}" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 transition-colors">Editar</a>
-                                        <form action="{{ route('suppliers.destroy', $supplier) }}" method="POST" onsubmit="return confirm('¿Estás seguro?')">
+                                        <a href="{{ route('suppliers.edit', $supplier->id) }}" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 transition-colors">Editar</a>
+                                        <form action="{{ route('suppliers.destroy', $supplier->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-brand-secondary hover:text-brand-secondary/80">Eliminar</button>

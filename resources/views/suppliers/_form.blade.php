@@ -7,7 +7,7 @@
 
     <div>
         <x-input-label for="contact_name" :value="__('Nombre de contacto')" />
-        <x-text-input id="contact_name" name="contact_name" type="text" class="mt-1 block w-full" :value="old('contact_name', $supplier->contact_name ?? '')" />
+        <x-text-input id="contact_name" name="contact_name" type="text" class="mt-1 block w-full" :value="old('contact_name', $supplier->contactName ?? '')" />
         <x-input-error class="mt-2" :messages="$errors->get('contact_name')" />
     </div>
 
@@ -31,7 +31,7 @@
 
     <div>
         <label for="is_active" class="inline-flex items-center">
-            <input id="is_active" type="checkbox" name="is_active" value="1" class="rounded border-brand-midnight/30 text-brand-primary shadow-sm focus:ring-brand-primary" {{ old('is_active', $supplier->is_active ?? true) ? 'checked' : '' }}>
+            <input id="is_active" type="checkbox" name="is_active" value="1" class="rounded border-brand-midnight/30 text-brand-primary shadow-sm focus:ring-brand-primary" {{ old('is_active', $supplier->isActive ?? true) ? 'checked' : '' }}>
             <span class="ms-2 text-sm text-brand-midnight/80">{{ __('Activo') }}</span>
         </label>
     </div>
