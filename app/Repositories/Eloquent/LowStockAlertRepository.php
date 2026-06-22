@@ -62,4 +62,14 @@ class LowStockAlertRepository extends BaseRepository implements LowStockAlertRep
 
         return LowStockAlertMapper::toData($alert);
     }
+
+    public function firstOrCreateUnresolvedForProduct(int|string $productId): LowStockAlertData
+    {
+        $alert = LowStockAlert::firstOrCreate(
+            ['product_id' => $productId, 'resolved_at' => null],
+            ['product_id' => $productId]
+        );
+
+        return LowStockAlertMapper::toData($alert);
+    }
 }

@@ -16,6 +16,7 @@ class LowStockAlertMapper
             resolvedAt: $alert->resolved_at?->toDateTimeImmutable(),
             createdAt: $alert->created_at->toDateTimeImmutable(),
             updatedAt: $alert->updated_at?->toDateTimeImmutable(),
+            wasRecentlyCreated: $alert->wasRecentlyCreated,
         );
     }
 

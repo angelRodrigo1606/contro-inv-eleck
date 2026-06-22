@@ -43,13 +43,11 @@ class StockAlertService
 
     private function createAlert(ProductData $product): void
     {
-        if ($this->lowStockAlertRepository->existsUnresolvedForProduct($product->id)) {
-            return;
+        $alert = $this->lowStockAlertRepository->firstOrCreateUnresolvedForProduct($product->id);
+
+        if ($alert->wasRecentlyCreated) {
+            $this->notifyAdmins($product);
         }
-
-        $this->lowStockAlertRepository->createForProduct($product->id);
-
-        $this->notifyAdmins($product);
     }
 
     private function notifyAdmins(ProductData $product): void

@@ -22,4 +22,6 @@ interface LowStockAlertRepositoryInterface
     public function existsUnresolvedForProduct(int|string $productId): bool;
 
     public function createForProduct(int|string $productId): LowStockAlertData;
+
+    public function firstOrCreateUnresolvedForProduct(int|string $productId): LowStockAlertData;
 }

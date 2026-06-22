@@ -12,5 +12,6 @@ readonly class LowStockAlertData
         public ?DateTimeImmutable $resolvedAt,
         public DateTimeImmutable $createdAt,
         public ?DateTimeImmutable $updatedAt,
+        public bool $wasRecentlyCreated = false,
     ) {}
 }
