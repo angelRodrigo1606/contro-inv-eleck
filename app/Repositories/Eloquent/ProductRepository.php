@@ -58,6 +58,18 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         return ProductMapper::toData($this->doFindOrFail($id));
     }
 
+    public function findOrFailForUpdate(int|string $id): ProductData
+    {
+        $product = Product::lockForUpdate()->findOrFail($id);
+
+        return ProductMapper::toData($product);
+    }
+
+    public function findOrFailForUpdateById(int|string $id): Product
+    {
+        return Product::lockForUpdate()->findOrFail($id);
+    }
+
     public function create(StoreProductData $data): ProductData
     {
         $product = $this->doCreate([

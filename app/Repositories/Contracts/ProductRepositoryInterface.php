@@ -6,6 +6,7 @@ use App\Dtos\Data\ProductData;
 use App\Dtos\Input\StoreProductData;
 use App\Dtos\Input\UpdateProductData;
 use App\Dtos\PaginatedData;
+use App\Models\Product;
 use Illuminate\Support\Collection;
 
 interface ProductRepositoryInterface
@@ -20,6 +21,10 @@ interface ProductRepositoryInterface
     public function findWithRelations(int|string $id): ProductData;
 
     public function findOrFail(int|string $id): ProductData;
+
+    public function findOrFailForUpdate(int|string $id): ProductData;
+
+    public function findOrFailForUpdateById(int|string $id): Product;
 
     public function create(StoreProductData $data): ProductData;
 
