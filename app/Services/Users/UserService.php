@@ -2,7 +2,9 @@
 
 namespace App\Services\Users;
 
-use App\Models\User;
+use App\Dtos\Data\UserData;
+use App\Dtos\Input\StoreUserData;
+use App\Dtos\Input\UpdateUserData;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Services\Exceptions\SelfDeletionException;
 use Illuminate\Support\Facades\Hash;
@@ -11,33 +13,38 @@ class UserService
 {
     public function __construct(private UserRepositoryInterface $userRepository) {}
 
-    public function create(array $data): User
+    public function create(StoreUserData $data): UserData
     {
-        $data['password'] = Hash::make($data['password']);
-
-        return $this->userRepository->create($data);
+        return $this->userRepository->create($this->withHashedPassword($data));
     }
 
-    public function update(User $user, array $data): User
+    public function update(int|string $id, UpdateUserData $data): UserData
     {
-        if (! empty($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        } else {
-            unset($data['password']);
-        }
-
-        return $this->userRepository->update($user, $data);
+        return $this->userRepository->update($id, $this->withHashedPassword($data));
     }
 
     /**
      * @throws SelfDeletionException
      */
-    public function delete(User $user, int $currentUserId): void
+    public function delete(int|string $id, int $currentUserId): void
     {
-        if ($user->id === $currentUserId) {
+        if ((int) $id === $currentUserId) {
             throw new SelfDeletionException;
         }
 
-        $this->userRepository->delete($user);
+        $this->userRepository->delete($id);
+    }
+
+    private function withHashedPassword(StoreUserData|UpdateUserData $data): StoreUserData|UpdateUserData
+    {
+        if ($data instanceof UpdateUserData && $data->password === null) {
+            return $data;
+        }
+
+        $hashed = Hash::make($data->password);
+
+        return $data instanceof StoreUserData
+            ? new StoreUserData($data->name, $data->email, $data->role, $hashed)
+            : new UpdateUserData($data->name, $data->email, $data->role, $hashed);
     }
 }

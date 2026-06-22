@@ -37,8 +37,8 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $user->email }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90 capitalize">{{ $user->role }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap flex space-x-2">
-                                        <a href="{{ route('users.edit', $user) }}" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 transition-colors">Editar</a>
-                                        <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('¿Estás seguro?')">
+                                        <a href="{{ route('users.edit', $user->id) }}" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 transition-colors">Editar</a>
+                                        <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-brand-secondary hover:text-brand-secondary/80">Eliminar</button>

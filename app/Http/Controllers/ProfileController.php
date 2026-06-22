@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Dtos\Input\UpdateProfileData;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Services\Users\ProfileService;
 use Illuminate\Http\RedirectResponse;
@@ -29,7 +30,7 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $this->profileService->update($request->user(), $request->validated());
+        $this->profileService->update($request->user()->id, UpdateProfileData::fromRequest($request->validated()));
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -47,7 +48,7 @@ class ProfileController extends Controller
 
         Auth::logout();
 
-        $this->profileService->delete($user, $request->password);
+        $this->profileService->delete($user->id, $request->password);
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

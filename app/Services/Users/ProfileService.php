@@ -2,34 +2,28 @@
 
 namespace App\Services\Users;
 
-use App\Models\User;
+use App\Dtos\Data\UserData;
+use App\Dtos\Input\UpdateProfileData;
 use App\Repositories\Contracts\UserRepositoryInterface;
-use Illuminate\Support\Facades\Hash;
 
 class ProfileService
 {
     public function __construct(private UserRepositoryInterface $userRepository) {}
 
-    public function update(User $user, array $data): User
+    public function update(int $userId, UpdateProfileData $data): UserData
     {
-        $user->fill($data);
-
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-
-        return $this->userRepository->save($user);
+        return $this->userRepository->updateProfile($userId, $data);
     }
 
     /**
      * @throws \InvalidArgumentException
      */
-    public function delete(User $user, string $password): void
+    public function delete(int $userId, string $password): void
     {
-        if (! Hash::check($password, $user->password)) {
+        if (! $this->userRepository->verifyPassword($userId, $password)) {
             throw new \InvalidArgumentException('La contraseña proporcionada no es correcta.');
         }
 
-        $this->userRepository->delete($user);
+        $this->userRepository->delete($userId);
     }
 }
