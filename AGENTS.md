@@ -141,6 +141,29 @@ Do not access Eloquent models directly from controllers or services; use DTOs an
 - Keep DTOs immutable (`readonly` properties, named constructor `fromRequest()` when appropriate).
 - When mapping paginated models to DTOs, use `PaginatedData::fromLengthAwarePaginator()` or a `through()` callback that returns a DTO.
 
+## Concurrency guidelines
+
+The inventory domain has concurrent writes (entries, exits, adjustments) on the same product stock. Follow these rules to keep data consistent:
+
+1. **Every operation that reads and writes the same product stock must:**
+   - Run inside `DB::transaction()`.
+   - Lock the product row with `ProductRepository::findOrFailForUpdateById()` **before** reading `quantity`.
+   - Validate stock sufficiency **after** acquiring the lock.
+
+2. **Never trust a read performed outside the transaction** when deciding whether a stock change is allowed.
+
+3. **Prefer atomic SQL operations** (`increment`, `decrement`, `update` on an already-locked model) over `read → calculate → write`.
+
+4. **Entities that must have "one active record per parent"** (e.g., one unresolved low-stock alert per product) must use a unique partial index or atomic `firstOrCreate`. Never use `exists()` followed by `create()`.
+
+5. **Database safeguards:**
+   - `products.quantity` is protected by a `CHECK quantity >= 0` constraint (or SQLite triggers) as a last line of defense.
+   - `low_stock_alerts` has a partial unique index on `product_id WHERE resolved_at IS NULL`.
+
+6. **Controllers must catch concurrency-related exceptions** (e.g., `InsufficientStockException`, `QueryException` for constraint violations) and show clear feedback to the user.
+
+7. **Add concurrency tests** for any new critical write operation. Existing tests live in `tests/Feature/ConcurrencyTest.php`.
+
 ## Security considerations
 
 - `.env` is git-ignored. Use `.env.example` as the template. Never commit real credentials or `APP_KEY`.
