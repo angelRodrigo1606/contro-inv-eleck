@@ -10,7 +10,9 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Repositories\Contracts\SupplierRepositoryInterface;
+use App\Services\Exceptions\InsufficientStockException;
 use App\Services\Inventory\ProductService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -81,11 +83,21 @@ class ProductController extends Controller
 
     public function adjust(AdjustStockRequest $request, int $id): RedirectResponse
     {
-        $movement = $this->productService->adjustStock(
-            $id,
-            AdjustStockData::fromRequest($request->validated()),
-            $request->user()->id
-        );
+        try {
+            $movement = $this->productService->adjustStock(
+                $id,
+                AdjustStockData::fromRequest($request->validated()),
+                $request->user()->id
+            );
+        } catch (InsufficientStockException $e) {
+            return redirect()->route('products.show', $id)
+                ->with('error', $e->getMessage())
+                ->withInput();
+        } catch (QueryException $e) {
+            return redirect()->route('products.show', $id)
+                ->with('error', 'No se pudo ajustar el stock porque otro usuario lo modificó o la operación resultaría en stock negativo.')
+                ->withInput();
+        }
 
         if ($movement === null) {
             return redirect()->route('products.show', $id)

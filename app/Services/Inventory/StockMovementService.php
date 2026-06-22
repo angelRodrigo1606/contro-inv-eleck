@@ -32,7 +32,7 @@ class StockMovementService
             $product = $this->productRepository->findOrFailForUpdateById($data->productId);
 
             if ($data->type === 'exit' && $product->quantity < $data->quantity) {
-                throw new InsufficientStockException;
+                throw new InsufficientStockException($product->quantity);
             }
 
             if ($data->type === 'entry') {
