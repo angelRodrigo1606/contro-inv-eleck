@@ -28,17 +28,17 @@ class StockMovementService
      */
     public function register(RegisterStockMovementData $data, int $userId): StockMovementData
     {
-        $product = $this->productRepository->findOrFail($data->productId);
+        return DB::transaction(function () use ($data, $userId) {
+            $product = $this->productRepository->findOrFailForUpdateById($data->productId);
 
-        if ($data->type === 'exit' && $product->quantity < $data->quantity) {
-            throw new InsufficientStockException;
-        }
+            if ($data->type === 'exit' && $product->quantity < $data->quantity) {
+                throw new InsufficientStockException;
+            }
 
-        return DB::transaction(function () use ($product, $data, $userId) {
             if ($data->type === 'entry') {
-                $this->productRepository->incrementQuantity($product->id, $data->quantity);
+                $product->increment('quantity', $data->quantity);
             } else {
-                $this->productRepository->decrementQuantity($product->id, $data->quantity);
+                $product->decrement('quantity', $data->quantity);
             }
 
             return $this->stockMovementRepository->createForProduct($product->id, $data->withUserId($userId));
