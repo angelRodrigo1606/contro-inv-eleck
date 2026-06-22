@@ -1,11 +1,14 @@
 <?php
 
+use App\Dtos\Input\AdjustStockData;
+use App\Dtos\Input\RegisterStockMovementData;
 use App\Models\LowStockAlert;
 use App\Models\Product;
 use App\Models\User;
 use App\Services\Exceptions\InsufficientStockException;
+use App\Services\Inventory\ProductService;
+use App\Services\Inventory\StockAlertService;
 use App\Services\Inventory\StockMovementService;
-use App\Dtos\Input\RegisterStockMovementData;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
@@ -71,7 +74,7 @@ describe('concurrency safeguards', function () {
     it('creates only one unresolved alert per product', function () {
         $product = Product::factory()->create(['quantity' => 5, 'min_stock' => 10]);
 
-        $service = app(\App\Services\Inventory\StockAlertService::class);
+        $service = app(StockAlertService::class);
 
         $service->syncForProduct($product->id);
         $service->syncForProduct($product->id);
@@ -83,7 +86,7 @@ describe('concurrency safeguards', function () {
     it('resolves alert when stock rises above threshold', function () {
         $product = Product::factory()->create(['quantity' => 5, 'min_stock' => 10]);
 
-        $service = app(\App\Services\Inventory\StockAlertService::class);
+        $service = app(StockAlertService::class);
         $service->syncForProduct($product->id);
 
         expect(LowStockAlert::where('product_id', $product->id)->unresolved()->count())->toBe(1);
@@ -103,17 +106,17 @@ describe('concurrency safeguards', function () {
 
     it('prevents concurrent manual adjustments from losing updates', function () {
         $product = Product::factory()->create(['quantity' => 10]);
-        $service = app(\App\Services\Inventory\ProductService::class);
+        $service = app(ProductService::class);
 
         $service->adjustStock(
             $product->id,
-            new \App\Dtos\Input\AdjustStockData(quantity: 15, reason: 'Ajuste A'),
+            new AdjustStockData(quantity: 15, reason: 'Ajuste A'),
             $this->admin->id
         );
 
         $service->adjustStock(
             $product->id,
-            new \App\Dtos\Input\AdjustStockData(quantity: 8, reason: 'Ajuste B'),
+            new AdjustStockData(quantity: 8, reason: 'Ajuste B'),
             $this->admin->id
         );
 
