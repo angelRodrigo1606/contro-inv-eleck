@@ -61,15 +61,15 @@ class ProductService
 
     public function adjustStock(int|string $productId, AdjustStockData $data, int $userId): ?StockMovementData
     {
-        $product = $this->productRepository->findOrFail($productId);
-        $difference = $data->quantity - $product->quantity;
+        return DB::transaction(function () use ($productId, $data, $userId) {
+            $product = $this->productRepository->findOrFailForUpdateById($productId);
+            $difference = $data->quantity - $product->quantity;
 
-        if ($difference === 0) {
-            return null;
-        }
+            if ($difference === 0) {
+                return null;
+            }
 
-        return DB::transaction(function () use ($productId, $data, $difference, $userId) {
-            $this->productRepository->updateQuantity($productId, $data->quantity);
+            $product->update(['quantity' => $data->quantity]);
 
             return $this->stockMovementRepository->createForProduct($productId, (new RegisterStockMovementData(
                 productId: $productId,
