@@ -15,6 +15,7 @@ class CategoryMapper
             name: $category->name,
             description: $category->description,
             isActive: (bool) $category->is_active,
+            productsCount: $category->products_count !== null ? (int) $category->products_count : 0,
             createdAt: $category->created_at?->toDateTimeImmutable(),
             updatedAt: $category->updated_at?->toDateTimeImmutable(),
             deletedAt: $category->deleted_at?->toDateTimeImmutable(),

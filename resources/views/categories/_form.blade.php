@@ -13,7 +13,7 @@
 
     <div>
         <label for="is_active" class="inline-flex items-center">
-            <input id="is_active" type="checkbox" name="is_active" value="1" class="rounded border-brand-midnight/30 text-brand-primary shadow-sm focus:ring-brand-primary" {{ old('is_active', $category->is_active ?? true) ? 'checked' : '' }}>
+            <input id="is_active" type="checkbox" name="is_active" value="1" class="rounded border-brand-midnight/30 text-brand-primary shadow-sm focus:ring-brand-primary" {{ old('is_active', $category->isActive ?? true) ? 'checked' : '' }}>
             <span class="ms-2 text-sm text-brand-midnight/80">{{ __('Activo') }}</span>
         </label>
     </div>

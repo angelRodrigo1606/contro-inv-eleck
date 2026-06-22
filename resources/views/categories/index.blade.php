@@ -39,16 +39,16 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $category->name }}</td>
                                     <td class="px-6 py-4">{{ $category->description }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">
-                                        @if($category->is_active)
+                                        @if($category->isActive)
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-brand-secondary/20 text-brand-midnight">Activo</span>
                                         @else
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-white text-brand-midnight">Inactivo</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $category->products_count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $category->productsCount }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap flex space-x-2">
-                                        <a href="{{ route('categories.edit', $category) }}" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 transition-colors">Editar</a>
-                                        <form action="{{ route('categories.destroy', $category) }}" method="POST" onsubmit="return confirm('¿Estás seguro?')">
+                                        <a href="{{ route('categories.edit', $category->id) }}" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 transition-colors">Editar</a>
+                                        <form action="{{ route('categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-brand-secondary hover:text-brand-secondary/80">Eliminar</button>

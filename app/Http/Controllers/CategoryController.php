@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Dtos\Input\StoreCategoryData;
+use App\Dtos\Input\UpdateCategoryData;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
-use App\Models\Category;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Services\Catalog\CategoryService;
 use App\Services\Exceptions\DependencyException;
@@ -20,7 +21,7 @@ class CategoryController extends Controller
 
     public function index(): View
     {
-        $categories = $this->categoryRepository->paginateWithProductCount();
+        $categories = $this->categoryRepository->paginateWithProductCount()->toPaginator();
 
         return view('categories.index', compact('categories'));
     }
@@ -32,34 +33,39 @@ class CategoryController extends Controller
 
     public function store(StoreCategoryRequest $request): RedirectResponse
     {
-        $this->categoryService->create($request->validated());
+        $this->categoryService->create(StoreCategoryData::fromRequest($request->validated()));
 
         return redirect()->route('categories.index')
             ->with('success', 'Categoría creada correctamente.');
     }
 
-    public function show(Category $category): View
+    public function show(int $id): View
     {
-        return view('categories.show', compact('category'));
+        $category = $this->categoryRepository->findOrFail($id);
+        $productsCount = $this->categoryRepository->countProducts($id);
+
+        return view('categories.show', compact('category', 'productsCount'));
     }
 
-    public function edit(Category $category): View
+    public function edit(int $id): View
     {
+        $category = $this->categoryRepository->findOrFail($id);
+
         return view('categories.edit', compact('category'));
     }
 
-    public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
+    public function update(UpdateCategoryRequest $request, int $id): RedirectResponse
     {
-        $this->categoryService->update($category, $request->validated());
+        $this->categoryService->update($id, UpdateCategoryData::fromRequest($request->validated()));
 
         return redirect()->route('categories.index')
             ->with('success', 'Categoría actualizada correctamente.');
     }
 
-    public function destroy(Category $category): RedirectResponse
+    public function destroy(int $id): RedirectResponse
     {
         try {
-            $this->categoryService->delete($category);
+            $this->categoryService->delete($id);
         } catch (DependencyException $e) {
             return redirect()->route('categories.index')
                 ->with('error', $e->getMessage());

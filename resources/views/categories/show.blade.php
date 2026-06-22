@@ -10,8 +10,8 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-brand-midnight">
                     <p><strong>Descripción:</strong> {{ $category->description ?: 'Sin descripción' }}</p>
-                    <p><strong>Estado:</strong> {{ $category->is_active ? 'Activo' : 'Inactivo' }}</p>
-                    <p><strong>Productos asociados:</strong> {{ $category->products()->count() }}</p>
+                    <p><strong>Estado:</strong> {{ $category->isActive ? 'Activo' : 'Inactivo' }}</p>
+                    <p><strong>Productos asociados:</strong> {{ $productsCount }}</p>
 
                     <div class="mt-6">
                         <a href="{{ route('categories.index') }}" class="text-brand-primary hover:text-brand-primary/80">Volver al listado</a>

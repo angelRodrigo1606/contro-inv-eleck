@@ -3,6 +3,7 @@
 namespace App\Dtos;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator as ConcreteLengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 readonly class PaginatedData
@@ -40,7 +41,7 @@ readonly class PaginatedData
 
     public function toPaginator(): LengthAwarePaginator
     {
-        return new LengthAwarePaginator(
+        return new ConcreteLengthAwarePaginator(
             $this->items,
             $this->total,
             $this->perPage,
