@@ -7,7 +7,7 @@ This file is a quick reference for AI coding agents working on this project. It 
 - **Project name:** `contro-inv-eleck` (Composer package name is still `laravel/laravel`).
 - **Purpose:** Web application for controlling the inventory of an electronic-products warehouse.
 - **Domain requirements:** The intended functionality is documented in `Ficha-Tecnica-Requerimientos-Funcionales.md` (Spanish). It covers product/catalog management, categories, suppliers, stock movements (entries/exits), low-stock alerts, reports, and role-based users (`Administrador` / `Empleado`).
-- **Current state:** The inventory domain modules are implemented. The application uses a **Repository pattern** on top of Eloquent: controllers depend on services, services depend on repository interfaces, and Eloquent implementations are bound in `AppServiceProvider`.
+- **Current state:** The inventory domain modules are implemented and migrated to a **DTO-based architecture**. The application uses a **Repository pattern** on top of Eloquent: controllers depend on services, services depend on repository interfaces, and Eloquent implementations are bound in `AppServiceProvider`. Services and controllers exchange plain data objects (read DTOs under `App\Dtos\Data`, input DTOs under `App\Dtos\Input`) instead of Eloquent models. Mappers translate models to DTOs in `App\Mappers`.
 - **Default locale:** `es` (`APP_LOCALE=es`). Spanish translation files live in `lang/es/` and `lang/es.json`.
 
 ## Technology stack
@@ -29,7 +29,11 @@ app/
   Http/Controllers/              # Web controllers (domain + auth)
   Http/Middleware/RoleMiddleware.php
   Http/Requests/                 # Form requests
+  Mappers/                       # Model → DTO mappers (Category, Supplier, Product, StockMovement, LowStockAlert, User)
   Models/                        # User, Category, Supplier, Product, StockMovement, LowStockAlert
+  Dtos/Data/                     # Read-only data DTOs
+  Dtos/Input/                    # Input/command DTOs for write operations
+  Dtos/PaginatedData.php         # Wrapper for paginated DTO collections
   Notifications/LowStockNotification.php
   Observers/StockMovementObserver.php
   Providers/AppServiceProvider.php
@@ -63,7 +67,9 @@ routes/
   console.php                    # Artisan command definitions
 tests/
   Feature/                       # Pest feature tests
-  Unit/ExampleTest.php
+  Unit/
+    ExampleTest.php
+    Mappers/                     # Unit tests for DTO mappers
   Pest.php                       # Pest configuration with RefreshDatabase for Feature
   TestCase.php
 ```
@@ -77,17 +83,21 @@ Autoloading follows PSR-4:
 
 ## Architecture
 
-The application follows a layered architecture:
+The application follows a layered architecture using DTOs:
 
 ```text
-Routes → Controller → Service → Repository Interface → Eloquent Repository → Model
+Routes → Controller → Input DTO → Service → Repository Interface → Eloquent Repository → Model
+                                     ↓
+                                Data DTO ← Mapper ← Model
 ```
 
-- **Controllers** handle HTTP concerns and delegate to services.
-- **Services** contain business rules, exceptions, and orchestration.
-- **Repositories** abstract all data access behind interfaces. Eloquent implementations live in `App\Repositories\Eloquent` and are bound to their interfaces in `AppServiceProvider::register()`.
+- **Controllers** handle HTTP concerns, build input DTOs from validated request data, and delegate to services.
+- **Services** contain business rules, exceptions, and orchestration. They receive input DTOs and return read DTOs.
+- **Repositories** abstract all data access behind interfaces. Eloquent implementations live in `App\Repositories\Eloquent`, map results to DTOs, and are bound to their interfaces in `AppServiceProvider::register()`.
+- **Mappers** (`App\Mappers`) translate Eloquent models into immutable read DTOs (`App\Dtos\Data`).
+- **PaginatedData** (`App\Dtos\PaginatedData`) wraps a `LengthAwarePaginator` of DTOs and can rebuild the Laravel paginator for views.
 
-Do not access Eloquent models directly from controllers or services; use the injected repository interfaces.
+Do not access Eloquent models directly from controllers or services; use DTOs and the injected repository interfaces.
 
 ## Build, development, and run commands
 
@@ -115,6 +125,7 @@ Do not access Eloquent models directly from controllers or services; use the inj
 - Base test class: `Tests\TestCase`.
 - `tests/Pest.php` extends `Tests\TestCase` for the `Feature` suite and applies `RefreshDatabase`.
 - Feature tests cover auth, categories, suppliers, products, stock movements, low-stock alerts, reports, users, and profile.
+- Unit tests cover DTO mappers (`tests/Unit/Mappers`).
 
 ## Code style guidelines
 
@@ -126,6 +137,9 @@ Do not access Eloquent models directly from controllers or services; use the inj
 - Tailwind CSS v4 is imported with `@import 'tailwindcss';` in `resources/css/app.css`.
 - Keep code in English (class names, variables, comments) unless the domain concept itself is Spanish-only and already reflected in the requirements document.
 - Type-hint repository interfaces in service and controller constructors.
+- Return read DTOs from services/repositories and accept input DTOs for write operations.
+- Keep DTOs immutable (`readonly` properties, named constructor `fromRequest()` when appropriate).
+- When mapping paginated models to DTOs, use `PaginatedData::fromLengthAwarePaginator()` or a `through()` callback that returns a DTO.
 
 ## Security considerations
 
@@ -155,4 +169,7 @@ Do not access Eloquent models directly from controllers or services; use the inj
 - `Ficha-Tecnica-Requerimientos-Funcionales.md` — Domain requirements (Spanish).
 - `app/Repositories/Contracts/` — Repository contracts.
 - `app/Repositories/Eloquent/` — Eloquent repository implementations.
+- `app/Dtos/Data/` — Read DTOs returned to controllers/views.
+- `app/Dtos/Input/` — Input DTOs accepted by services.
+- `app/Mappers/` — Model-to-DTO mappers.
 - `app/Providers/AppServiceProvider.php` — Repository interface bindings and observer registration.
