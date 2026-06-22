@@ -32,14 +32,14 @@
         <tbody>
             @foreach($movements as $movement)
                 <tr>
-                    <td>{{ $movement->created_at->format('d/m/Y H:i') }}</td>
-                    <td>{{ $movement->product->name }}</td>
-                    <td>{{ $movement->product->category->name }}</td>
+                    <td>{{ $movement->createdAt->format('d/m/Y H:i') }}</td>
+                    <td>{{ $movement->product?->name }}</td>
+                    <td>{{ $movement->product?->category?->name }}</td>
                     <td>{{ $movement->quantity }}</td>
                     @if($type === 'entry')
-                        <td>{{ $movement->product->supplier->name }}</td>
+                        <td>{{ $movement->product?->supplier?->name }}</td>
                     @endif
-                    <td>{{ $movement->user->name }}</td>
+                    <td>{{ $movement->user?->name }}</td>
                     <td>{{ $movement->reference }}</td>
                 </tr>
             @endforeach

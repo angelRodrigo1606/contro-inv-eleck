@@ -2,13 +2,13 @@
 
 namespace App\Services\Reporting;
 
+use App\Dtos\PaginatedData;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Repositories\Contracts\LowStockAlertRepositoryInterface;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\StockMovementRepositoryInterface;
 use App\Repositories\Contracts\SupplierRepositoryInterface;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class ReportService
 {
@@ -30,7 +30,7 @@ class ReportService
         ];
     }
 
-    public function getMovements(array $filters, string $type, bool $paginate = true): LengthAwarePaginator|Collection
+    public function getMovements(array $filters, string $type, bool $paginate = true): PaginatedData|Collection
     {
         return $this->stockMovementRepository->getByType($filters, $type, $paginate);
     }

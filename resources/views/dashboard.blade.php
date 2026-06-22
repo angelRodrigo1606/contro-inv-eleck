@@ -38,8 +38,8 @@
                             <tbody class="bg-white divide-y divide-brand-midnight/10">
                                 @foreach($recentMovements as $movement)
                                     <tr class="hover:bg-brand-soft transition-colors duration-150">
-                                        <td class="px-4 py-2 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->created_at->format('d/m/Y') }}</td>
-                                        <td class="px-4 py-2 text-sm text-brand-midnight/90">{{ $movement->product->name }}</td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->createdAt->format('d/m/Y') }}</td>
+                                        <td class="px-4 py-2 text-sm text-brand-midnight/90">{{ $movement->product?->name }}</td>
                                         <td class="px-4 py-2 text-sm text-brand-midnight/90 capitalize">{{ $movement->type }}</td>
                                         <td class="px-4 py-2 text-sm text-brand-midnight/90">{{ $movement->quantity }}</td>
                                     </tr>
@@ -58,9 +58,9 @@
                                     <li class="py-3 flex justify-between items-center">
                                         <div>
                                             <p class="text-sm font-medium text-brand-midnight">{{ $alert->product->name }}</p>
-                                            <p class="text-sm text-brand-midnight/70">Stock: {{ $alert->product->quantity }} / {{ $alert->product->min_stock }}</p>
+                                            <p class="text-sm text-brand-midnight/70">Stock: {{ $alert->product->quantity }} / {{ $alert->product->minStock }}</p>
                                         </div>
-                                        <a href="{{ route('products.show', $alert->product) }}" class="text-brand-primary hover:text-brand-primary/80 text-sm">Ver</a>
+                                        <a href="{{ route('products.show', $alert->product->id) }}" class="text-brand-primary hover:text-brand-primary/80 text-sm">Ver</a>
                                     </li>
                                 @endforeach
                             </ul>

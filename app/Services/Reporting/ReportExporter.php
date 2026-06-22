@@ -3,8 +3,8 @@
 namespace App\Services\Reporting;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReportExporter
@@ -44,17 +44,17 @@ class ReportExporter
 
             foreach ($movements as $movement) {
                 $row = [
-                    $movement->created_at->format('d/m/Y H:i'),
-                    $movement->product->name,
-                    $movement->product->category->name,
+                    $movement->createdAt->format('d/m/Y H:i'),
+                    $movement->product?->name,
+                    $movement->product?->category?->name,
                     $movement->quantity,
                 ];
 
                 if ($type === 'entry') {
-                    $row[] = $movement->product->supplier->name;
+                    $row[] = $movement->product?->supplier?->name;
                 }
 
-                $row[] = $movement->user->name;
+                $row[] = $movement->user?->name;
                 $row[] = $movement->reference;
 
                 fputcsv($handle, $row);

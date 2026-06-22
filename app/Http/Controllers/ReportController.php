@@ -23,7 +23,7 @@ class ReportController extends Controller
 
     public function entries(Request $request): View
     {
-        $movements = $this->reportService->getMovements($request->all(), 'entry');
+        $movements = $this->reportService->getMovements($request->all(), 'entry')->toPaginator();
         $filters = $this->reportService->getFilterOptions();
 
         return view('reports.entries', array_merge(compact('movements'), $filters));
@@ -31,7 +31,7 @@ class ReportController extends Controller
 
     public function exits(Request $request): View
     {
-        $movements = $this->reportService->getMovements($request->all(), 'exit');
+        $movements = $this->reportService->getMovements($request->all(), 'exit')->toPaginator();
         $filters = $this->reportService->getFilterOptions();
 
         return view('reports.exits', array_merge(compact('movements'), $filters));
