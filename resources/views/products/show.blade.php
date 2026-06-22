@@ -11,20 +11,20 @@
                 <div class="p-6 text-brand-midnight">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <p><strong>SKU:</strong> {{ $product->sku }}</p>
-                        <p><strong>Categoría:</strong> {{ $product->category->name }}</p>
-                        <p><strong>Proveedor:</strong> {{ $product->supplier->name }}</p>
+                        <p><strong>Categoría:</strong> {{ $product->category?->name }}</p>
+                        <p><strong>Proveedor:</strong> {{ $product->supplier?->name }}</p>
                         <p><strong>Precio:</strong> ${{ number_format($product->price, 2) }}</p>
-                        <p class="{{ $product->isLowStock() ? 'text-brand-secondary font-bold' : '' }}">
+                        <p class="{{ $product->isLowStock ? 'text-brand-secondary font-bold' : '' }}">
                             <strong>Stock actual:</strong> {{ $product->quantity }}
                         </p>
-                        <p><strong>Stock mínimo:</strong> {{ $product->min_stock }}</p>
+                        <p><strong>Stock mínimo:</strong> {{ $product->minStock }}</p>
                     </div>
                     <p class="mt-4"><strong>Descripción:</strong> {{ $product->description ?: 'Sin descripción' }}</p>
 
                     @if(auth()->user()->isAdmin())
                         <div class="mt-6 p-4 bg-white rounded">
                             <h4 class="font-medium mb-2">Ajustar stock</h4>
-                            <form method="POST" action="{{ route('products.adjust', $product) }}" class="flex gap-2 items-end">
+                            <form method="POST" action="{{ route('products.adjust', $product->id) }}" class="flex gap-2 items-end">
                                 @csrf
                                 <div>
                                     <x-input-label for="quantity" :value="__('Nueva cantidad')" />
@@ -62,11 +62,11 @@
                         <tbody class="bg-white divide-y divide-brand-midnight/20">
                             @forelse($product->stockMovements as $movement)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->created_at->format('d/m/Y H:i') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->createdAt->format('d/m/Y H:i') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap capitalize">{{ $movement->type }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $movement->quantity }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $movement->reference }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->user->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $movement->user?->name }}</td>
                                 </tr>
                             @empty
                                 <tr>

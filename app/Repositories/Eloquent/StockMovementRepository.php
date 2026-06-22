@@ -2,11 +2,13 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\Models\Product;
+use App\Dtos\Data\StockMovementData;
+use App\Dtos\Input\RegisterStockMovementData;
+use App\Dtos\PaginatedData;
+use App\Mappers\StockMovementMapper;
 use App\Models\StockMovement;
 use App\Repositories\Contracts\StockMovementRepositoryInterface;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class StockMovementRepository extends BaseRepository implements StockMovementRepositoryInterface
 {
@@ -15,9 +17,9 @@ class StockMovementRepository extends BaseRepository implements StockMovementRep
         parent::__construct($model);
     }
 
-    public function search(array $filters): LengthAwarePaginator
+    public function search(array $filters): PaginatedData
     {
-        return StockMovement::with(['product.category', 'user'])
+        $paginator = StockMovement::with(['product.category', 'user'])
             ->when($filters['type'] ?? null, function ($query, $type) {
                 $query->where('type', $type);
             })
@@ -33,9 +35,11 @@ class StockMovementRepository extends BaseRepository implements StockMovementRep
             ->orderByDesc('created_at')
             ->paginate(20)
             ->withQueryString();
+
+        return PaginatedData::fromLengthAwarePaginator($paginator, [StockMovementMapper::class, 'toData']);
     }
 
-    public function getByType(array $filters, string $type, bool $paginate = true): LengthAwarePaginator|Collection
+    public function getByType(array $filters, string $type, bool $paginate = true): PaginatedData|Collection
     {
         $query = StockMovement::with(['product.category', 'product.supplier', 'user'])
             ->where('type', $type)
@@ -50,21 +54,36 @@ class StockMovementRepository extends BaseRepository implements StockMovementRep
             })
             ->orderByDesc('created_at');
 
-        return $paginate
-            ? $query->paginate(20)->withQueryString()
-            : $query->get();
+        if (! $paginate) {
+            return StockMovementMapper::toDataCollection($query->get());
+        }
+
+        $paginator = $query->paginate(20)->withQueryString();
+
+        return PaginatedData::fromLengthAwarePaginator($paginator, [StockMovementMapper::class, 'toData']);
     }
 
-    public function createForProduct(Product $product, array $data): StockMovement
+    public function createForProduct(int|string $productId, RegisterStockMovementData $data): StockMovementData
     {
-        return $product->stockMovements()->create($data);
+        $movement = StockMovement::create([
+            'product_id' => $productId,
+            'user_id' => $data->userId,
+            'type' => $data->type,
+            'quantity' => $data->quantity,
+            'reference' => $data->reference,
+            'notes' => $data->notes,
+        ]);
+
+        return StockMovementMapper::toData($movement);
     }
 
     public function recent(int $limit = 10): Collection
     {
-        return StockMovement::with(['product', 'user'])
-            ->orderByDesc('created_at')
-            ->limit($limit)
-            ->get();
+        return StockMovementMapper::toDataCollection(
+            StockMovement::with(['product', 'user'])
+                ->orderByDesc('created_at')
+                ->limit($limit)
+                ->get()
+        );
     }
 }

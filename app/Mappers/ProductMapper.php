@@ -4,7 +4,7 @@ namespace App\Mappers;
 
 use App\Dtos\Data\ProductData;
 use App\Models\Product;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 
 class ProductMapper
@@ -24,7 +24,7 @@ class ProductMapper
             supplier: $product->relationLoaded('supplier') && $product->supplier ? SupplierMapper::toData($product->supplier) : null,
             stockMovements: $withStockMovements && $product->relationLoaded('stockMovements')
                 ? StockMovementMapper::toDataCollection($product->stockMovements)
-                : App::make(\Illuminate\Support\Collection::class),
+                : App::make(Collection::class),
             createdAt: $product->created_at?->toDateTimeImmutable(),
             updatedAt: $product->updated_at?->toDateTimeImmutable(),
             deletedAt: $product->deleted_at?->toDateTimeImmutable(),

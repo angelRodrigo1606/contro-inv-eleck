@@ -54,8 +54,8 @@
                         <tbody class="bg-white divide-y divide-brand-midnight/10">
                             @foreach($movements as $movement)
                                 <tr class="hover:bg-brand-soft transition-colors duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->created_at->format('d/m/Y H:i') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->product->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->createdAt->format('d/m/Y H:i') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->product?->name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap capitalize">
                                         @if($movement->type === 'entry')
                                             <span class="text-brand-primary font-semibold">Entrada</span>
@@ -65,7 +65,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->quantity }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->reference }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->user->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $movement->user?->name }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

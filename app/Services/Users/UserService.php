@@ -23,6 +23,28 @@ class UserService
         return $this->userRepository->update($id, $this->withHashedPassword($data));
     }
 
+    public function updatePassword(int|string $id, string $password): UserData
+    {
+        $user = $this->userRepository->findOrFail($id);
+
+        return $this->userRepository->update($id, new UpdateUserData(
+            name: $user->name,
+            email: $user->email,
+            role: $user->role,
+            password: Hash::make($password),
+        ));
+    }
+
+    public function createRegisteredUser(string $name, string $email, string $password): UserData
+    {
+        return $this->create(new StoreUserData(
+            name: $name,
+            email: $email,
+            role: 'empleado',
+            password: $password,
+        ));
+    }
+
     /**
      * @throws SelfDeletionException
      */

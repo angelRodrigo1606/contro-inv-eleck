@@ -4,7 +4,7 @@ namespace App\Mappers;
 
 use App\Dtos\Data\SupplierData;
 use App\Models\Supplier;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class SupplierMapper
 {

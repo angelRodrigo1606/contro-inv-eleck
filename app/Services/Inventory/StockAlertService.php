@@ -2,13 +2,13 @@
 
 namespace App\Services\Inventory;
 
-use App\Models\LowStockAlert;
-use App\Models\Product;
+use App\Dtos\Data\ProductData;
+use App\Dtos\PaginatedData;
+use App\Models\User;
 use App\Notifications\LowStockNotification;
 use App\Repositories\Contracts\LowStockAlertRepositoryInterface;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class StockAlertService
 {
@@ -18,43 +18,43 @@ class StockAlertService
         private UserRepositoryInterface $userRepository
     ) {}
 
-    public function unresolved(): LengthAwarePaginator
+    public function unresolved(): PaginatedData
     {
         return $this->lowStockAlertRepository->paginateUnresolved();
     }
 
-    public function resolve(LowStockAlert $alert): void
+    public function resolve(int|string $alertId): void
     {
-        $this->lowStockAlertRepository->resolve($alert);
+        $this->lowStockAlertRepository->resolve($alertId);
     }
 
-    public function syncForProduct(Product $product): void
+    public function syncForProduct(int|string $productId): void
     {
-        $product->refresh();
+        $product = $this->productRepository->findOrFail($productId);
 
-        if ($product->quantity <= $product->min_stock) {
+        if ($product->quantity <= $product->minStock) {
             $this->createAlert($product);
 
             return;
         }
 
-        $this->lowStockAlertRepository->resolveForProduct($product);
+        $this->lowStockAlertRepository->resolveForProduct($productId);
     }
 
-    private function createAlert(Product $product): void
+    private function createAlert(ProductData $product): void
     {
-        if ($this->lowStockAlertRepository->existsUnresolvedForProduct($product)) {
+        if ($this->lowStockAlertRepository->existsUnresolvedForProduct($product->id)) {
             return;
         }
 
-        $this->lowStockAlertRepository->createForProduct($product);
+        $this->lowStockAlertRepository->createForProduct($product->id);
 
         $this->notifyAdmins($product);
     }
 
-    private function notifyAdmins(Product $product): void
+    private function notifyAdmins(ProductData $product): void
     {
         $this->userRepository->getAdmins()
-            ->each(fn ($admin) => $admin->notify(new LowStockNotification($product)));
+            ->each(fn (User $admin) => $admin->notify(new LowStockNotification($product)));
     }
 }

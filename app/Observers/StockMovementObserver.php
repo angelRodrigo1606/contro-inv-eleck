@@ -11,6 +11,6 @@ class StockMovementObserver
 
     public function created(StockMovement $movement): void
     {
-        $this->alertService->syncForProduct($movement->product);
+        $this->alertService->syncForProduct($movement->product_id);
     }
 }

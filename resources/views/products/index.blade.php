@@ -46,18 +46,18 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-brand-midnight/10">
                             @foreach($products as $product)
-                                <tr class="{{ $product->isLowStock() ? 'bg-brand-secondary/20' : '' }} hover:bg-brand-soft transition-colors duration-150">
+                                <tr class="{{ $product->isLowStock ? 'bg-brand-secondary/20' : '' }} hover:bg-brand-soft transition-colors duration-150">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $product->name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $product->sku }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $product->category->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $product->category?->name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">${{ number_format($product->price, 2) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90 {{ $product->isLowStock() ? 'text-brand-secondary font-bold' : '' }}">
-                                        {{ $product->quantity }} / {{ $product->min_stock }}
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90 {{ $product->isLowStock ? 'text-brand-secondary font-bold' : '' }}">
+                                        {{ $product->quantity }} / {{ $product->minStock }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap flex space-x-2">
-                                        <a href="{{ route('products.show', $product) }}" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 transition-colors">Ver</a>
+                                        <a href="{{ route('products.show', $product->id) }}" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 transition-colors">Ver</a>
                                         @if(auth()->user()->isAdmin())
-                                            <a href="{{ route('products.edit', $product) }}" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 transition-colors">Editar</a>
+                                            <a href="{{ route('products.edit', $product->id) }}" class="text-sm font-medium text-brand-primary hover:text-brand-primary/80 transition-colors">Editar</a>
                                         @endif
                                     </td>
                                 </tr>

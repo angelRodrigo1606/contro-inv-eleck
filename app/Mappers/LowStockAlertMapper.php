@@ -4,7 +4,7 @@ namespace App\Mappers;
 
 use App\Dtos\Data\LowStockAlertData;
 use App\Models\LowStockAlert;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class LowStockAlertMapper
 {

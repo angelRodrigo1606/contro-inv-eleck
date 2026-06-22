@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Dtos\Input\AdjustStockData;
+use App\Dtos\Input\StoreProductData;
+use App\Dtos\Input\UpdateProductData;
 use App\Http\Requests\AdjustStockRequest;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
-use App\Models\Product;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Repositories\Contracts\SupplierRepositoryInterface;
 use App\Services\Inventory\ProductService;
@@ -23,7 +25,7 @@ class ProductController extends Controller
 
     public function index(Request $request): View
     {
-        $products = $this->productService->search($request->only(['search', 'category_id']));
+        $products = $this->productService->search($request->only(['search', 'category_id']))->toPaginator();
         $categories = $this->categoryRepository->allOrdered();
 
         return view('products.index', compact('products', 'categories'));
@@ -39,58 +41,58 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request): RedirectResponse
     {
-        $this->productService->create($request->validated(), $request->user());
+        $this->productService->create(StoreProductData::fromRequest($request->validated()), $request->user()->id);
 
         return redirect()->route('products.index')
             ->with('success', 'Producto creado correctamente.');
     }
 
-    public function show(Product $product): View
+    public function show(int $id): View
     {
-        $product = $this->productService->findWithRelations($product->id);
+        $product = $this->productService->findWithRelations($id);
 
         return view('products.show', compact('product'));
     }
 
-    public function edit(Product $product): View
+    public function edit(int $id): View
     {
+        $product = $this->productService->findWithRelations($id);
         $categories = $this->categoryRepository->allOrdered();
         $suppliers = $this->supplierRepository->allOrdered();
 
         return view('products.edit', compact('product', 'categories', 'suppliers'));
     }
 
-    public function update(UpdateProductRequest $request, Product $product): RedirectResponse
+    public function update(UpdateProductRequest $request, int $id): RedirectResponse
     {
-        $this->productService->update($product, $request->validated());
+        $this->productService->update($id, UpdateProductData::fromRequest($request->validated()));
 
         return redirect()->route('products.index')
             ->with('success', 'Producto actualizado correctamente.');
     }
 
-    public function destroy(Product $product): RedirectResponse
+    public function destroy(int $id): RedirectResponse
     {
-        $this->productService->delete($product);
+        $this->productService->delete($id);
 
         return redirect()->route('products.index')
             ->with('success', 'Producto eliminado correctamente.');
     }
 
-    public function adjust(AdjustStockRequest $request, Product $product): RedirectResponse
+    public function adjust(AdjustStockRequest $request, int $id): RedirectResponse
     {
         $movement = $this->productService->adjustStock(
-            $product,
-            (int) $request->validated()['quantity'],
-            $request->validated()['reason'] ?? null,
-            $request->user()
+            $id,
+            AdjustStockData::fromRequest($request->validated()),
+            $request->user()->id
         );
 
         if ($movement === null) {
-            return redirect()->route('products.show', $product)
+            return redirect()->route('products.show', $id)
                 ->with('info', 'La cantidad no cambió.');
         }
 
-        return redirect()->route('products.show', $product)
+        return redirect()->route('products.show', $id)
             ->with('success', 'Stock ajustado correctamente.');
     }
 }

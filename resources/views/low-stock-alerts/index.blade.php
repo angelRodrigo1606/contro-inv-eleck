@@ -27,15 +27,15 @@
                             @forelse($alerts as $alert)
                                 <tr class="hover:bg-brand-soft transition-colors duration-150">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">
-                                        <a href="{{ route('products.show', $alert->product) }}" class="text-brand-primary hover:text-brand-primary/80">
+                                        <a href="{{ route('products.show', $alert->product->id) }}" class="text-brand-primary hover:text-brand-primary/80">
                                             {{ $alert->product->name }}
                                         </a>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $alert->product->quantity }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $alert->product->min_stock }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $alert->created_at->format('d/m/Y H:i') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $alert->product->minStock }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">{{ $alert->createdAt->format('d/m/Y H:i') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-brand-midnight/90">
-                                        <form action="{{ route('low-stock-alerts.resolve', $alert) }}" method="POST">
+                                        <form action="{{ route('low-stock-alerts.resolve', $alert->id) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
                                             <button type="submit" class="text-brand-primary hover:text-brand-primary/80">Marcar resuelta</button>

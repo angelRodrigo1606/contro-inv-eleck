@@ -2,11 +2,12 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Dtos\Data\LowStockAlertData;
+use App\Dtos\PaginatedData;
+use App\Mappers\LowStockAlertMapper;
 use App\Models\LowStockAlert;
-use App\Models\Product;
 use App\Repositories\Contracts\LowStockAlertRepositoryInterface;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class LowStockAlertRepository extends BaseRepository implements LowStockAlertRepositoryInterface
 {
@@ -15,44 +16,50 @@ class LowStockAlertRepository extends BaseRepository implements LowStockAlertRep
         parent::__construct($model);
     }
 
-    public function paginateUnresolved(int $perPage = 15): LengthAwarePaginator
+    public function paginateUnresolved(int $perPage = 15): PaginatedData
     {
-        return LowStockAlert::with('product')
+        $paginator = LowStockAlert::with('product')
             ->unresolved()
             ->orderByDesc('created_at')
             ->paginate($perPage);
+
+        return PaginatedData::fromLengthAwarePaginator($paginator, [LowStockAlertMapper::class, 'toData']);
     }
 
     public function recentUnresolved(int $limit = 5): Collection
     {
-        return LowStockAlert::with('product')
-            ->unresolved()
-            ->orderByDesc('created_at')
-            ->limit($limit)
-            ->get();
+        return LowStockAlertMapper::toDataCollection(
+            LowStockAlert::with('product')
+                ->unresolved()
+                ->orderByDesc('created_at')
+                ->limit($limit)
+                ->get()
+        );
     }
 
-    public function resolve(LowStockAlert $alert): void
+    public function resolve(int|string $alertId): void
     {
-        $alert->resolve();
+        $this->doFindOrFail($alertId)->resolve();
     }
 
-    public function resolveForProduct(Product $product): void
+    public function resolveForProduct(int|string $productId): void
     {
-        LowStockAlert::where('product_id', $product->id)
+        LowStockAlert::where('product_id', $productId)
             ->unresolved()
             ->update(['resolved_at' => now()]);
     }
 
-    public function existsUnresolvedForProduct(Product $product): bool
+    public function existsUnresolvedForProduct(int|string $productId): bool
     {
-        return LowStockAlert::where('product_id', $product->id)
+        return LowStockAlert::where('product_id', $productId)
             ->unresolved()
             ->exists();
     }
 
-    public function createForProduct(Product $product): LowStockAlert
+    public function createForProduct(int|string $productId): LowStockAlertData
     {
-        return LowStockAlert::create(['product_id' => $product->id]);
+        $alert = LowStockAlert::create(['product_id' => $productId]);
+
+        return LowStockAlertMapper::toData($alert);
     }
 }

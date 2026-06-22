@@ -10,6 +10,7 @@ readonly class RegisterStockMovementData
         public int $quantity,
         public ?string $reference,
         public ?string $notes,
+        public ?int $userId = null,
     ) {}
 
     public static function fromRequest(array $validated): self
@@ -20,6 +21,18 @@ readonly class RegisterStockMovementData
             quantity: (int) $validated['quantity'],
             reference: $validated['reference'] ?? null,
             notes: $validated['notes'] ?? null,
+        );
+    }
+
+    public function withUserId(int $userId): self
+    {
+        return new self(
+            productId: $this->productId,
+            type: $this->type,
+            quantity: $this->quantity,
+            reference: $this->reference,
+            notes: $this->notes,
+            userId: $userId,
         );
     }
 }

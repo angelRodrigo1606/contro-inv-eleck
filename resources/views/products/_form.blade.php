@@ -26,7 +26,7 @@
             <select id="category_id" name="category_id" class="mt-1 block w-full border-brand-midnight/30 focus:border-brand-primary focus:ring-brand-primary rounded-md shadow-sm" required>
                 <option value="">Selecciona una categoría</option>
                 @foreach($categories as $category)
-                    <option value="{{ $category->id }}" {{ old('category_id', $product->category_id ?? '') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                    <option value="{{ $category->id }}" {{ old('category_id', $product->category?->id ?? '') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                 @endforeach
             </select>
             <x-input-error class="mt-2" :messages="$errors->get('category_id')" />
@@ -37,7 +37,7 @@
             <select id="supplier_id" name="supplier_id" class="mt-1 block w-full border-brand-midnight/30 focus:border-brand-primary focus:ring-brand-primary rounded-md shadow-sm" required>
                 <option value="">Selecciona un proveedor</option>
                 @foreach($suppliers as $supplier)
-                    <option value="{{ $supplier->id }}" {{ old('supplier_id', $product->supplier_id ?? '') == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
+                    <option value="{{ $supplier->id }}" {{ old('supplier_id', $product->supplier?->id ?? '') == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
                 @endforeach
             </select>
             <x-input-error class="mt-2" :messages="$errors->get('supplier_id')" />
@@ -59,7 +59,7 @@
 
         <div>
             <x-input-label for="min_stock" :value="__('Stock mínimo')" />
-            <x-text-input id="min_stock" name="min_stock" type="number" min="0" class="mt-1 block w-full" :value="old('min_stock', $product->min_stock ?? 0)" required />
+            <x-text-input id="min_stock" name="min_stock" type="number" min="0" class="mt-1 block w-full" :value="old('min_stock', $product->minStock ?? 0)" required />
             <x-input-error class="mt-2" :messages="$errors->get('min_stock')" />
         </div>
     </div>

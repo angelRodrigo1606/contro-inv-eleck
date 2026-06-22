@@ -2,22 +2,24 @@
 
 namespace App\Repositories\Contracts;
 
-use App\Models\LowStockAlert;
-use App\Models\Product;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
+use App\Dtos\Data\LowStockAlertData;
+use App\Dtos\PaginatedData;
+use Illuminate\Support\Collection;
 
-interface LowStockAlertRepositoryInterface extends RepositoryInterface
+interface LowStockAlertRepositoryInterface
 {
-    public function paginateUnresolved(int $perPage = 15): LengthAwarePaginator;
+    public function paginateUnresolved(int $perPage = 15): PaginatedData;
 
+    /**
+     * @return Collection<int, LowStockAlertData>
+     */
     public function recentUnresolved(int $limit = 5): Collection;
 
-    public function resolve(LowStockAlert $alert): void;
+    public function resolve(int|string $alertId): void;
 
-    public function resolveForProduct(Product $product): void;
+    public function resolveForProduct(int|string $productId): void;
 
-    public function existsUnresolvedForProduct(Product $product): bool;
+    public function existsUnresolvedForProduct(int|string $productId): bool;
 
-    public function createForProduct(Product $product): LowStockAlert;
+    public function createForProduct(int|string $productId): LowStockAlertData;
 }
