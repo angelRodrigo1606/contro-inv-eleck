@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --color-bg-base: #FFE2A8;
+    --color-surface: #ffffff;
+    --color-surface-alt: #F9F9FB;
+    --color-text: #1C2E5C;
+    --color-text-muted: rgba(28, 46, 92, 0.7);
+    --color-border: rgba(28, 46, 92, 0.1);
+    --color-input-border: rgba(28, 46, 92, 0.3);
+}
+
+.dark {
+    --color-bg-base: #0f172a;
+    --color-surface: #1e293b;
+    --color-surface-alt: #334155;
+    --color-text: #f8fafc;
+    --color-text-muted: rgba(248, 250, 252, 0.7);
+    --color-border: rgba(248, 250, 252, 0.1);
+    --color-input-border: rgba(248, 250, 252, 0.3);
+}
+
 @font-face {
     font-family: 'SF Pro Display';
     src: url('../fonts/SFPRODISPLAYREGULAR.OTF') format('opentype');
