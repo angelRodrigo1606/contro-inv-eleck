@@ -40,7 +40,7 @@
         </div>
 
         <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-brand-midnight/80 hover:text-brand-midnight rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary" href="{{ route('login') }}">
+            <a class="underline text-sm text-theme-text-muted hover:text-theme-text rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary" href="{{ route('login') }}">
                 {{ __('Already registered?') }}
             </a>
 

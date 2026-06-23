@@ -27,19 +27,19 @@
         <!-- Remember Me -->
         <div class="block mt-4">
             <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-brand-midnight/30 text-brand-primary shadow-sm focus:ring-brand-primary" name="remember">
-                <span class="ms-2 text-sm text-brand-midnight/80">{{ __('Remember me') }}</span>
+                <input id="remember_me" type="checkbox" class="rounded border-theme-input-border text-brand-primary shadow-sm focus:ring-brand-primary" name="remember">
+                <span class="ms-2 text-sm text-theme-text-muted">{{ __('Remember me') }}</span>
             </label>
         </div>
 
         <div class="flex items-center justify-end mt-4">
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-brand-midnight/80 hover:text-brand-midnight rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary" href="{{ route('password.request') }}">
+                <a class="underline text-sm text-theme-text-muted hover:text-theme-text rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary" href="{{ route('password.request') }}">
                     {{ __('Forgot your password?') }}
                 </a>
             @endif
 
-            <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 bg-brand-cream border border-brand-midnight/30 rounded-md font-semibold text-xs text-brand-midnight uppercase tracking-widest shadow-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150 ms-3">
+            <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 bg-theme-surface-alt border border-theme-input-border rounded-md font-semibold text-xs text-theme-text uppercase tracking-widest shadow-sm hover:bg-theme-surface focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150 ms-3">
                 Registrarse
             </a>
 

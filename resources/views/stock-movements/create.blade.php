@@ -1,20 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-brand-midnight leading-tight">
+        <h2 class="font-semibold text-xl text-theme-text leading-tight">
             {{ __('Registrar movimiento') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-brand-midnight">
+            <div class="bg-theme-surface overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-theme-text">
                     <form method="POST" action="{{ route('stock-movements.store') }}">
                         @csrf
                         <div class="space-y-4">
                             <div>
                                 <x-input-label for="product_id" :value="__('Producto')" />
-                                <select id="product_id" name="product_id" class="mt-1 block w-full border-brand-midnight/30 focus:border-brand-primary focus:ring-brand-primary rounded-md shadow-sm" required>
+                                <select id="product_id" name="product_id" class="mt-1 block w-full border-theme-input-border focus:border-brand-primary focus:ring-brand-primary rounded-md shadow-sm bg-theme-surface text-theme-text" required>
                                     <option value="">Selecciona un producto</option>
                                     @foreach($products as $product)
                                         <option value="{{ $product->id }}" {{ old('product_id') == $product->id ? 'selected' : '' }}>
@@ -27,7 +27,7 @@
 
                             <div>
                                 <x-input-label for="type" :value="__('Tipo')" />
-                                <select id="type" name="type" class="mt-1 block w-full border-brand-midnight/30 focus:border-brand-primary focus:ring-brand-primary rounded-md shadow-sm" required>
+                                <select id="type" name="type" class="mt-1 block w-full border-theme-input-border focus:border-brand-primary focus:ring-brand-primary rounded-md shadow-sm bg-theme-surface text-theme-text" required>
                                     <option value="">Selecciona el tipo</option>
                                     <option value="entry" {{ old('type') == 'entry' ? 'selected' : '' }}>Entrada</option>
                                     <option value="exit" {{ old('type') == 'exit' ? 'selected' : '' }}>Salida</option>
@@ -49,14 +49,14 @@
 
                             <div>
                                 <x-input-label for="notes" :value="__('Notas')" />
-                                <textarea id="notes" name="notes" rows="3" class="mt-1 block w-full border-brand-midnight/30 focus:border-brand-primary focus:ring-brand-primary rounded-md shadow-sm">{{ old('notes') }}</textarea>
+                                <textarea id="notes" name="notes" rows="3" class="mt-1 block w-full border-theme-input-border focus:border-brand-primary focus:ring-brand-primary rounded-md shadow-sm bg-theme-surface text-theme-text">{{ old('notes') }}</textarea>
                                 <x-input-error class="mt-2" :messages="$errors->get('notes')" />
                             </div>
                         </div>
 
                         <div class="flex items-center gap-4 mt-6">
                             <x-primary-button>{{ __('Guardar') }}</x-primary-button>
-                            <a href="{{ route('stock-movements.index') }}" class="text-sm text-brand-midnight/80 hover:text-brand-midnight">Cancelar</a>
+                            <a href="{{ route('stock-movements.index') }}" class="text-sm text-theme-text-muted hover:text-theme-text">Cancelar</a>
                         </div>
                     </form>
                 </div>
