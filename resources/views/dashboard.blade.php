@@ -72,6 +72,20 @@
                         @endif
                     </div>
                 </div>
+
+                <div class="bg-theme-surface overflow-hidden shadow-sm sm:rounded-lg border border-theme-border lg:col-span-2">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium mb-4 text-theme-text">Entradas vs salidas (últimos 12 meses)</h3>
+                        <div class="relative h-80 w-full">
+                            <canvas
+                                id="stockMovementChart"
+                                data-labels='@json($stockMovementSummary->pluck('month'))'
+                                data-entries='@json($stockMovementSummary->pluck('entries'))'
+                                data-exits='@json($stockMovementSummary->pluck('exits'))'>
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
