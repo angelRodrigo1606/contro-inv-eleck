@@ -9,6 +9,7 @@ use App\Mappers\StockMovementMapper;
 use App\Models\StockMovement;
 use App\Repositories\Contracts\StockMovementRepositoryInterface;
 use Illuminate\Support\Collection;
+use stdClass;
 
 class StockMovementRepository extends BaseRepository implements StockMovementRepositoryInterface
 {
@@ -85,5 +86,34 @@ class StockMovementRepository extends BaseRepository implements StockMovementRep
                 ->limit($limit)
                 ->get()
         );
+    }
+
+    public function monthlySummary(int $months = 12): Collection
+    {
+        $startDate = now()->subMonths($months - 1)->startOfMonth();
+
+        $movements = StockMovement::where('created_at', '>=', $startDate)
+            ->whereIn('type', ['entry', 'exit'])
+            ->get()
+            ->groupBy(fn (StockMovement $movement) => $movement->created_at->format('Y-m'))
+            ->map(fn (Collection $group) => [
+                'entries' => $group->where('type', 'entry')->sum('quantity'),
+                'exits' => $group->where('type', 'exit')->sum('quantity'),
+            ]);
+
+        $summary = collect();
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $month = now()->subMonths($i)->format('Y-m');
+            $monthData = $movements->get($month, ['entries' => 0, 'exits' => 0]);
+
+            $item = new stdClass;
+            $item->month = $month;
+            $item->entries = (int) $monthData['entries'];
+            $item->exits = (int) $monthData['exits'];
+
+            $summary->push($item);
+        }
+
+        return $summary;
     }
 }

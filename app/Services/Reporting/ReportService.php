@@ -27,6 +27,7 @@ class ReportService
             'lowStockCount' => $this->productRepository->lowStockCount(),
             'recentMovements' => $this->stockMovementRepository->recent(),
             'unresolvedAlerts' => $this->lowStockAlertRepository->recentUnresolved(),
+            'stockMovementSummary' => $this->stockMovementRepository->monthlySummary(12),
         ];
     }
 

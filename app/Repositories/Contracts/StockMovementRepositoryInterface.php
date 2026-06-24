@@ -19,4 +19,9 @@ interface StockMovementRepositoryInterface
      * @return Collection<int, StockMovementData>
      */
     public function recent(int $limit = 10): Collection;
+
+    /**
+     * @return Collection<int, object{month: string, entries: int, exits: int}>
+     */
+    public function monthlySummary(int $months = 12): Collection;
 }
