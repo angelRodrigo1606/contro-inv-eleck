@@ -15,6 +15,7 @@ class UserMapper
             name: $user->name,
             email: $user->email,
             role: $user->role,
+            avatar: $user->avatar,
             emailVerifiedAt: $user->email_verified_at?->toDateTimeImmutable(),
             createdAt: $user->created_at?->toDateTimeImmutable(),
             updatedAt: $user->updated_at?->toDateTimeImmutable(),

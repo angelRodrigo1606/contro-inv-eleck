@@ -11,7 +11,10 @@ use App\Mappers\UserMapper;
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
@@ -65,10 +68,24 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function updateProfile(int|string $id, UpdateProfileData $data): UserData
     {
         $user = $this->doFindOrFail($id);
-        $user->fill([
+        $payload = [
             'name' => $data->name,
             'email' => $data->email,
-        ]);
+        ];
+
+        if ($data->avatar instanceof UploadedFile) {
+            if ($user->avatar !== null) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            $payload['avatar'] = $data->avatar->storeAs(
+                "avatars/{$user->id}",
+                Str::random(32).'.'.$data->avatar->getClientOriginalExtension(),
+                'public'
+            );
+        }
+
+        $user->fill($payload);
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;

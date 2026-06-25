@@ -11,6 +11,7 @@ readonly class UserData
         public string $name,
         public string $email,
         public string $role,
+        public ?string $avatar,
         public ?DateTimeImmutable $emailVerifiedAt,
         public ?DateTimeImmutable $createdAt,
         public ?DateTimeImmutable $updatedAt,
