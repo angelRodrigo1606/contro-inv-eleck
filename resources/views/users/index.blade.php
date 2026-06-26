@@ -33,7 +33,12 @@
                         <tbody class="bg-theme-surface divide-y divide-theme-border">
                             @foreach($users as $user)
                                 <tr class="hover:bg-theme-surface-alt transition-colors duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-theme-text-muted">{{ $user->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-theme-text-muted">
+                                        <div class="flex items-center gap-2">
+                                            <x-avatar :src="$user->avatar" :name="$user->name" size="sm" />
+                                            <span>{{ $user->name }}</span>
+                                        </div>
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-theme-text-muted">{{ $user->email }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-theme-text-muted capitalize">{{ $user->role }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap flex space-x-2">

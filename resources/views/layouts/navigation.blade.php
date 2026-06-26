@@ -46,10 +46,11 @@
                 <x-theme-toggle />
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-brand-cream bg-brand-primary/20 hover:text-white focus:outline-none transition ease-in-out duration-150">
+                        <button class="inline-flex items-center gap-2 px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-brand-cream bg-brand-primary/20 hover:text-white focus:outline-none transition ease-in-out duration-150">
+                            <x-avatar :src="Auth::user()->avatar" :name="Auth::user()->name" size="sm" />
                             <div>{{ Auth::user()->name }}</div>
 
-                            <div class="ms-1">
+                            <div>
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>
@@ -122,9 +123,12 @@
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-brand-primary/20">
             <div class="px-4 flex items-center justify-between">
-                <div>
-                    <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-brand-cream">{{ Auth::user()->email }}</div>
+                <div class="flex items-center gap-3">
+                    <x-avatar :src="Auth::user()->avatar" :name="Auth::user()->name" size="md" />
+                    <div>
+                        <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
+                        <div class="font-medium text-sm text-brand-cream">{{ Auth::user()->email }}</div>
+                    </div>
                 </div>
                 <x-theme-toggle />
             </div>

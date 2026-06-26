@@ -50,11 +50,9 @@
         <div>
             <x-input-label for="avatar" :value="__('Profile photo')" />
 
-            @if ($user->avatar)
-                <div class="mt-2">
-                    <img src="{{ Storage::url($user->avatar) }}" alt="{{ $user->name }}" class="h-20 w-20 rounded-full object-cover">
-                </div>
-            @endif
+            <div class="mt-2">
+                <x-avatar :src="$user->avatar" :name="$user->name" size="lg" />
+            </div>
 
             <input
                 id="avatar"
